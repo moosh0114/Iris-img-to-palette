@@ -18,6 +18,7 @@ IMPORTANT : This project is still in the development and testing stages, licensi
 [![uv](https://img.shields.io/badge/uv-DE5FE9?style=for-the-badge&logo=uv&logoColor=white)](https://github.com/astral-sh/uv)
 [![GenieJl](https://img.shields.io/badge/Genie.jl-9558B2?style=for-the-badge&logo=julia&logoColor=white)](https://github.com/GenieFramework/Genie.jl)
 
+**[ for Dependencies Details please see the end of this README ]**
 
 Iris-Color-Processor uses Django for backend. And uses uv for dependency and environment management. Django licensed under the BSD 3-Clause License. uv has multiple licenses.
 
@@ -25,7 +26,7 @@ Iris-Color-Processor uses Alpine.js, HTMX & Tailwind CSS for GUI showing. Alpine
 
 Iris-Color-Processor uses Genie.jl for Julia Extension. Genie.jl licensed under the MIT License.
 
-## Installation ( PyPI, JuliaHub )
+## Install ( PyPI, JuliaHub )
 ### Install Iris-Color-Processor As Package
 
 ## Try GUI To Test
