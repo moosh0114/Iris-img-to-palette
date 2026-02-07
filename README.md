@@ -28,7 +28,7 @@ Iris-Color-Processor uses Genie.jl for Julia Extension. Genie.jl licensed under 
 ## Installation ( PyPI, JuliaHub )
 ### Install Iris-Color-Processor As Package
 
-## Try GUI
+## Try GUI To Test
 
 For Python Version : 
 
@@ -52,12 +52,17 @@ run scripts : `python -m uv run scripts/[your_py_scripts.py]`
 
 Django License : [https://github.com/django/django/blob/main/LICENSE](https://github.com/django/django/blob/main/LICENSE)
 <br>
+
 uv License : [https://github.com/astral-sh/uv/blob/main/LICENSE-MIT](https://github.com/astral-sh/uv/blob/main/LICENSE-MIT) & another Apache-2.0 [License](https://github.com/astral-sh/uv/blob/main/LICENSE-APACHE)
 <br>
+
 Alpine.js License : [https://github.com/alpinejs/alpine/blob/main/LICENSE.md](https://github.com/alpinejs/alpine/blob/main/LICENSE.md)
 <br>
+
 HTMX License : [https://github.com/bigskysoftware/htmx/blob/master/LICENSE](https://github.com/bigskysoftware/htmx/blob/master/LICENSE)
 <br>
+
 Tailwind CSS License : [https://github.com/tailwindlabs/tailwindcss/blob/main/LICENSE](https://github.com/tailwindlabs/tailwindcss/blob/main/LICENSE)
 <br>
+
 Genie.jl License : [https://github.com/GenieFramework/Genie.jl/blob/main/LICENSE.md](https://github.com/GenieFramework/Genie.jl/blob/main/LICENSE.md)
