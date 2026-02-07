@@ -15,12 +15,15 @@ IMPORTANT : This project is still in the development and testing stages, licensi
 [![Alpine.js](https://img.shields.io/badge/Alpine.js-8BC0D0?style=for-the-badge&logo=alpinedotjs&logoColor=white)](https://github.com/alpinejs/alpine)
 [![HTMX](https://img.shields.io/badge/HTMX-3366CC?style=for-the-badge&logo=htmx&logoColor=white)](https://github.com/bigskysoftware/htmx)
 [![Tailwind CSS](https://img.shields.io/badge/tailwind_css-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://github.com/tailwindlabs/tailwindcss)
+[![uv](https://img.shields.io/badge/uv-DE5FE9?style=for-the-badge&logo=uv&logoColor=white)](https://github.com/astral-sh/uv)
 [![GenieJl](https://img.shields.io/badge/Genie.jl-9558B2?style=for-the-badge&logo=julia&logoColor=white)](https://github.com/GenieFramework/Genie.jl)
 
 
-Iris-Color-Processor uses Django for backend. Django licensed under the BSD 3-Clause License.
+Iris-Color-Processor uses Django for backend. And uses uv for dependency and environment management. Django licensed under the BSD 3-Clause License. uv has multiple licenses.
 
 Django License : [https://github.com/django/django/blob/main/LICENSE](https://github.com/django/django/blob/main/LICENSE)
+<br>
+uv License : [https://github.com/astral-sh/uv/blob/main/LICENSE-MIT](https://github.com/astral-sh/uv/blob/main/LICENSE-MIT) & another Apache-2.0 License
 
 Iris-Color-Processor uses Alpine.js, HTMX & Tailwind CSS for GUI showing. Alpine.js & Tailwind CSS licensed under the MIT License. HTMX licensed under Zero-Clause BSD License.
 
@@ -30,6 +33,29 @@ HTMX License : [https://github.com/bigskysoftware/htmx/blob/master/LICENSE](http
 <br>
 Tailwind CSS License : [https://github.com/tailwindlabs/tailwindcss/blob/main/LICENSE](https://github.com/tailwindlabs/tailwindcss/blob/main/LICENSE)
 
-Iris-Color-Processor uses Genie.jl for Julia extension ( Backend ). Genie.jl licensed under the MIT License.
+Iris-Color-Processor uses Genie.jl for Julia Extension. Genie.jl licensed under the MIT License.
 
 Genie.jl License : [https://github.com/GenieFramework/Genie.jl/blob/main/LICENSE.md](https://github.com/GenieFramework/Genie.jl/blob/main/LICENSE.md)
+
+## Installation
+### Install Iris-Color-Processor As Package
+
+## Try GUI
+
+For Python Version : 
+
+1. install Python : [https://www.python.org/downloads/](https://www.python.org/downloads/)
+
+For Julia Version : 
+
+1. install Julia : [https://julialang.org/](https://julialang.org/)
+
+## Run Scripts To Test ( Python )
+
+upgrade : `python -m pip install --upgrade pip`
+
+use uv : `python -m pip install uv` & `python -m uv sync`
+
+run scripts : `python -m uv run scripts/[your_py_scripts.py]`
+
+## Run Scripts To Test ( Julia )
