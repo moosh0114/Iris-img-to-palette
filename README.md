@@ -20,7 +20,7 @@ IMPORTANT : This project is still in the development and testing stages, licensi
 
 **[ for Dependencies Details please see the end of this README ]**
 
-Iris-Color-Processor uses Django for backend. And uses uv for dependency and environment management. Django licensed under the BSD 3-Clause License. uv has multiple licenses.
+Iris-Color-Processor uses Django for GUI backend. And uses uv for dependency and environment management. Django licensed under the BSD 3-Clause License. uv has multiple licenses.
 
 Iris-Color-Processor uses Alpine.js, HTMX & Tailwind CSS for GUI showing. Alpine.js & Tailwind CSS licensed under the MIT License. HTMX licensed under Zero-Clause BSD License.
 
