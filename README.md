@@ -72,7 +72,7 @@ Tailwind CSS License : [https://github.com/tailwindlabs/tailwindcss/blob/main/LI
 Genie.jl License : [https://github.com/GenieFramework/Genie.jl/blob/main/LICENSE.md](https://github.com/GenieFramework/Genie.jl/blob/main/LICENSE.md)
 <br>
 
-scikit-learn License : [https://github.com/scikit-learn/scikit-learn?tab=BSD-3-Clause-1-ov-file#readme](https://github.com/scikit-learn/scikit-learn?tab=BSD-3-Clause-1-ov-file#readme)
+scikit-learn License : [https://github.com/scikit-learn/scikit_learn?tab=BSD-3-Clause-1-ov-file#readme](https://github.com/scikit-learn/scikit-learn?tab=BSD-3-Clause-1-ov-file#readme)
 <br>
 
 OpenCV License : [https://github.com/opencv/opencv/blob/4.x/LICENSE](https://github.com/opencv/opencv/blob/4.x/LICENSE)
