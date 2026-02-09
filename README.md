@@ -16,6 +16,7 @@ IMPORTANT : This project is still in the development and testing stages, licensi
 [![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)](https://github.com/django/django)
 [![scikit-learn](https://img.shields.io/badge/scikit_learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)](https://github.com/scikit-learn/scikit-learn)
 [![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)](https://github.com/opencv/opencv)
+[![uv](https://img.shields.io/badge/uv-DE5FE9?style=for-the-badge&logo=uv&logoColor=white)](https://github.com/astral-sh/uv)
 [![GenieJl](https://img.shields.io/badge/Genie.jl-9558B2?style=for-the-badge&logo=julia&logoColor=white)](https://github.com/GenieFramework/Genie.jl)
 [![MLJ.Jl](https://img.shields.io/badge/MLJ.jl-9558B2?style=for-the-badge&logo=julia&logoColor=white)](https://github.com/JuliaAI/MLJ.jl)
 <br>
@@ -25,7 +26,7 @@ IMPORTANT : This project is still in the development and testing stages, licensi
 
 **[ for Dependencies Details please see the end of this README ]**
 
-Iris-Color-Processor uses Django for GUI backend and uses scikit-learn & OpenCV for image color extraction. Django & scikit-learn licensed under the BSD 3-Clause License. OpenCV licensed under the Apache-2.0 License. 
+Iris-Color-Processor uses Django for GUI backend and uses scikit-learn & OpenCV for image color extraction, uses uv for dependency and environment management. Django & scikit-learn licensed under the BSD 3-Clause License. OpenCV licensed under the Apache-2.0 License. uv has multiple licenses.
 
 Iris-Color-Processor uses Alpine.js, HTMX & Tailwind CSS for GUI showing. Alpine.js & Tailwind CSS licensed under the MIT License. HTMX licensed under Zero-Clause BSD License.
 
@@ -63,6 +64,9 @@ scikit-learn License : [https://github.com/scikit-learn/scikit-learn?tab=BSD-3-C
 <br>
 
 OpenCV License : [https://github.com/opencv/opencv/blob/4.x/LICENSE](https://github.com/opencv/opencv/blob/4.x/LICENSE)
+<br>
+
+uv License : [https://github.com/astral-sh/uv/blob/main/LICENSE-MIT](https://github.com/astral-sh/uv/blob/main/LICENSE-MIT) & another Apache-2.0 [License](https://github.com/astral-sh/uv/blob/main/LICENSE-APACHE)
 <br>
 
 Genie.jl License : [https://github.com/GenieFramework/Genie.jl/blob/main/LICENSE.md](https://github.com/GenieFramework/Genie.jl/blob/main/LICENSE.md)
