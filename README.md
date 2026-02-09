@@ -16,13 +16,14 @@ IMPORTANT : This project is still in the development and testing stages, licensi
 [![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)](https://github.com/django/django)
 [![Alpine.js](https://img.shields.io/badge/Alpine.js-8BC0D0?style=for-the-badge&logo=alpinedotjs&logoColor=white)](https://github.com/alpinejs/alpine)
 [![HTMX](https://img.shields.io/badge/HTMX-3366CC?style=for-the-badge&logo=htmx&logoColor=white)](https://github.com/bigskysoftware/htmx)
-[![Tailwind CSS](https://img.shields.io/badge/tailwind_css-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://github.com/tailwindlabs/tailwindcss)
-[![uv](https://img.shields.io/badge/uv-DE5FE9?style=for-the-badge&logo=uv&logoColor=white)](https://github.com/astral-sh/uv)
+[![Tailwind CSS](https://img.shields.io/badge/tailwind-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://github.com/tailwindlabs/tailwindcss)
 [![GenieJl](https://img.shields.io/badge/Genie.jl-9558B2?style=for-the-badge&logo=julia&logoColor=white)](https://github.com/GenieFramework/Genie.jl)
+[![scikit-learn](https://img.shields.io/badge/scikit-learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)](https://github.com/scikit-learn/scikit-learn)
+[![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)](https://github.com/opencv/opencv)
 
 **[ for Dependencies Details please see the end of this README ]**
 
-Iris-Color-Processor uses Django for GUI backend. And uses uv for dependency and environment management. Django licensed under the BSD 3-Clause License. uv has multiple licenses.
+Iris-Color-Processor uses Django for GUI backend and uses scikit-learn & OpenCV for image color extraction. Django & scikit-learn licensed under the BSD 3-Clause License. OpenCV licensed under the Apache-2.0 License. 
 
 Iris-Color-Processor uses Alpine.js, HTMX & Tailwind CSS for GUI showing. Alpine.js & Tailwind CSS licensed under the MIT License. HTMX licensed under Zero-Clause BSD License.
 
@@ -69,3 +70,9 @@ Tailwind CSS License : [https://github.com/tailwindlabs/tailwindcss/blob/main/LI
 <br>
 
 Genie.jl License : [https://github.com/GenieFramework/Genie.jl/blob/main/LICENSE.md](https://github.com/GenieFramework/Genie.jl/blob/main/LICENSE.md)
+<br>
+
+scikit-learn License : [https://github.com/scikit-learn/scikit-learn?tab=BSD-3-Clause-1-ov-file#readme](https://github.com/scikit-learn/scikit-learn?tab=BSD-3-Clause-1-ov-file#readme)
+<br>
+
+OpenCV License : [https://github.com/opencv/opencv/blob/4.x/LICENSE](https://github.com/opencv/opencv/blob/4.x/LICENSE)
