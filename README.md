@@ -28,7 +28,7 @@ IMPORTANT : This project is still in the development and testing stages, licensi
 
 **[ for Dependencies Details please see the end of this README ]**
 
-Iris-Color-Processor uses Django for GUI backend and uses scikit-learn & OpenCV for image color extraction, uses uv for dependency and environment management. Django & scikit-learn licensed under the BSD 3-Clause License. OpenCV licensed under the Apache-2.0 License. uv has multiple licenses.
+Iris-Color-Processor uses Django for GUI backend and uses scikit-learn & OpenCV for image color extraction, leverages K-Means clustering, and outputs results in the OKLCH color space to ensure perceptual uniformity and high-fidelity color analysis, while using uv for dependency and environment management. Django & scikit-learn licensed under the BSD 3-Clause License. OpenCV licensed under the Apache-2.0 License. uv has multiple licenses.
 
 Iris-Color-Processor uses Alpine.js, HTMX & Tailwind CSS for GUI showing. Alpine.js & Tailwind CSS licensed under the MIT License. HTMX licensed under Zero-Clause BSD License.
 
@@ -55,7 +55,17 @@ use uv : `python -m pip install uv` & `python -m uv sync`
 
 run scripts : `python -m uv run scripts/[your_py_scripts.py]`
 
+extract dominant colors : `uv run scripts/extract_colors.py` (processes `test.jpg` and outputs dominant colors)
+
 ## Run Scripts To Test ( Julia )
+
+## Color Standard: OKLCH
+
+This project uses $Oklch$ ($L, c, h$) coordinates for better alignment with human visual perception.
+
+For achromatic colors ($c < 10^{-9}$), hue is normalized automatically to $h=0.0$.
+
+Color values are reported with 6-decimal precision for scientific consistency.
 
 ## Project Dependencies Details
 
