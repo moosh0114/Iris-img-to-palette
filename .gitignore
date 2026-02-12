@@ -71,3 +71,5 @@ Thumbs.db
 *.bak
 *.tmp
 .cache/
+
+uv.lock
