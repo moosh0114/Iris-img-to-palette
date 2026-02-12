@@ -6,6 +6,8 @@ import cv2
 import numpy as np
 from sklearn.cluster import KMeans
 
+from color_oklch import hex_to_oklch
+
 
 def _resize_for_speed(image_bgr: np.ndarray) -> np.ndarray:
     """
@@ -22,12 +24,16 @@ def _resize_for_speed(image_bgr: np.ndarray) -> np.ndarray:
     return cv2.resize(image_bgr, (target_width, target_height), interpolation=cv2.INTER_AREA)
 
 
-def extract_dominant_colors(image_path: str, n_colors: int = 3) -> list[str]:
+def extract_dominant_colors(image_path: str, n_colors: int = 3) -> list[dict[str, object]]:
     """
-    Extract dominant colors from an image as hex strings.
+    Extract dominant colors from an image in hex + OKLCH format.
 
     Returns:
-        List[str]: e.g. ['#ff0000', '#00ff00', '#0000ff']
+        List[dict[str, object]]: e.g.
+        [
+            {"hex": "#ff0000", "oklch": {"L": 0.628, "c": 0.258, "h": 29.23}},
+            ...
+        ]
     """
     image_bgr = cv2.imread(image_path)
     if image_bgr is None:
@@ -44,10 +50,27 @@ def extract_dominant_colors(image_path: str, n_colors: int = 3) -> list[str]:
     centers = np.rint(kmeans.cluster_centers_).astype(np.uint8)
     sorted_indices = np.argsort(counts)[::-1]
 
-    return [
-        "#{:02x}{:02x}{:02x}".format(*centers[idx])
-        for idx in sorted_indices
-    ]
+    results: list[dict[str, object]] = []
+    for idx in sorted_indices:
+        hex_color = "#{:02x}{:02x}{:02x}".format(*centers[idx])
+        L, c, h = hex_to_oklch(hex_color)
+
+        # OKLCH hue is undefined for achromatic colors; normalize to 0 for stable output.
+        if c < 1e-9:
+            h = 0.0
+
+        results.append(
+            {
+                "hex": hex_color,
+                "oklch": {
+                    "L": round(float(L), 6),
+                    "c": round(float(c), 6),
+                    "h": round(float(h), 6),
+                },
+            }
+        )
+
+    return results
 
 
 if __name__ == "__main__":
