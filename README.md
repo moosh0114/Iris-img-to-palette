@@ -7,7 +7,7 @@
 <br>
 <img src="https://github.com/moosh0114/Iris-img-to-palette/blob/main/logo/logo.png" alt="Iris-Color-Processor" style="height: 280px; width: auto;" />
 
-### Color Solution for Python / Julia
+### Color Solution for Python
 
 IMPORTANT : This project is still in the development and testing stages, licensing terms may be updated in the future. Please don't do any commercial usage currently.
 
@@ -16,9 +16,7 @@ IMPORTANT : This project is still in the development and testing stages, licensi
 [![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)](https://github.com/django/django)
 [![scikit-learn](https://img.shields.io/badge/scikit_learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)](https://github.com/scikit-learn/scikit-learn)
 [![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)](https://github.com/opencv/opencv)
-[![uv](https://img.shields.io/badge/uv-DE5FE9?style=for-the-badge&logo=uv&logoColor=white)](https://github.com/astral-sh/uv)
-[![GenieJl](https://img.shields.io/badge/Genie.jl-9558B2?style=for-the-badge&logo=julia&logoColor=white)](https://github.com/GenieFramework/Genie.jl)
-[![MLJ.Jl](https://img.shields.io/badge/MLJ.jl-9558B2?style=for-the-badge&logo=julia&logoColor=white)](https://github.com/JuliaAI/MLJ.jl)
+[![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://github.com/pytorch/pytorch)
 
 **( GUI )**
 
@@ -28,13 +26,11 @@ IMPORTANT : This project is still in the development and testing stages, licensi
 
 **[ for Dependencies Details please see the end of this README ]**
 
-Iris-Color-Processor uses Django for GUI backend and uses scikit-learn & OpenCV for image color extraction, leverages K-Means clustering, and outputs results in the OKLCH color space to ensure perceptual uniformity and high-fidelity color analysis, while using uv for dependency and environment management. Django & scikit-learn licensed under the BSD 3-Clause License. OpenCV licensed under the Apache-2.0 License. uv has multiple licenses.
+Iris-Color-Processor uses Django for GUI backend and uses scikit-learn & OpenCV for image color extraction, leverages K-Means clustering, and outputs results in the OKLCH color space to ensure perceptual uniformity and high-fidelity color analysis. It now also incorporates PyTorch for potential deep learning-based color analysis workflows. Django & scikit-learn are licensed under the BSD 3-Clause License. OpenCV is licensed under the Apache-2.0 License. PyTorch is BSD-style licensed.
 
 Iris-Color-Processor uses Alpine.js, HTMX & Tailwind CSS for GUI showing. Alpine.js & Tailwind CSS licensed under the MIT License. HTMX licensed under Zero-Clause BSD License.
 
-Iris-Color-Processor uses Genie.jl & MLJ.jl for Julia Extension. Genie.jl & MLJ.jl licensed under the MIT License.
-
-## Install ( PyPI, JuliaHub )
+## Install ( PyPI )
 ### Install Iris-Color-Processor As Package
 
 ## Try GUI To Test
@@ -43,21 +39,15 @@ For Python Version :
 
 1. install Python : [https://www.python.org/downloads/](https://www.python.org/downloads/)
 
-For Julia Version : 
-
-1. install Julia : [https://julialang.org/](https://julialang.org/)
-
 ## Run Scripts To Test ( Python )
 
 upgrade : `python -m pip install --upgrade pip`
 
-use uv : `python -m pip install uv` & `python -m uv sync`
+install dependencies : `pip install -r requirements.txt`
 
-run scripts : `python -m uv run scripts/[your_py_scripts.py]`
+run scripts : `python scripts/[your_py_scripts.py]`
 
-extract dominant colors : `uv run scripts/extract_colors.py` (processes `test.jpg` and outputs dominant colors)
-
-## Run Scripts To Test ( Julia )
+extract dominant colors : `python scripts/extract_colors.py` (processes `test.jpg` and outputs dominant colors)
 
 ## Color Standard: OKLCH
 
@@ -78,13 +68,7 @@ scikit-learn License : [https://github.com/scikit-learn/scikit-learn?tab=BSD-3-C
 OpenCV License : [https://github.com/opencv/opencv/blob/4.x/LICENSE](https://github.com/opencv/opencv/blob/4.x/LICENSE)
 <br>
 
-uv License : [https://github.com/astral-sh/uv/blob/main/LICENSE-MIT](https://github.com/astral-sh/uv/blob/main/LICENSE-MIT) & another Apache-2.0 [License](https://github.com/astral-sh/uv/blob/main/LICENSE-APACHE)
-<br>
-
-Genie.jl License : [https://github.com/GenieFramework/Genie.jl/blob/main/LICENSE.md](https://github.com/GenieFramework/Genie.jl/blob/main/LICENSE.md)
-<br>
-
-MLJ.jl License : [https://github.com/JuliaAI/MLJ.jl/blob/dev/LICENCE.md](https://github.com/JuliaAI/MLJ.jl/blob/dev/LICENCE.md)
+PyTorch License : [https://github.com/pytorch/pytorch/blob/main/LICENSE](https://github.com/pytorch/pytorch/blob/main/LICENSE)
 <br>
 
 Alpine.js License : [https://github.com/alpinejs/alpine/blob/main/LICENSE.md](https://github.com/alpinejs/alpine/blob/main/LICENSE.md)
