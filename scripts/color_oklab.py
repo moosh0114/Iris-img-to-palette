@@ -1,7 +1,7 @@
 import numpy as np
 
 
-# Oklab -> LMS' (Bjorn Ottosson standard constants)
+# Oklab -> LMS'
 OKLAB_TO_LMS_PRIME = np.array(
     [
         [1.0, 0.3963377774, 0.2158037573],
@@ -11,7 +11,8 @@ OKLAB_TO_LMS_PRIME = np.array(
     dtype=np.float64,
 )
 
-# Linear LMS -> Linear sRGB (Bjorn Ottosson standard constants)
+
+# Linear LMS -> Linear sRGB
 LMS_TO_LINEAR_SRGB = np.array(
     [
         [4.0767416621, -3.3077115913, 0.2309699292],
@@ -23,7 +24,7 @@ LMS_TO_LINEAR_SRGB = np.array(
 
 
 def _linear_to_srgb(c: float) -> float:
-    """Convert one linear RGB channel to sRGB with standard gamma correction."""
+    # Convert one linear RGB channel to sRGB with standard gamma correction
     if c <= 0.0031308:
         return 12.92 * c
     return 1.055 * (c ** (1.0 / 2.4)) - 0.055

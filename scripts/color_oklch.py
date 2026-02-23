@@ -60,3 +60,4 @@ if __name__ == "__main__":
     black_hex = "#000000"
     l3, c3, h3 = hex_to_oklch(black_hex)
     print(f"HEX {black_hex} -> L: {l3:.4f}, C: {c3:.4f}, h: {h3:.2f}°")
+    
