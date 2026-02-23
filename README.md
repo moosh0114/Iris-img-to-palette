@@ -28,6 +28,8 @@ IMPORTANT : This project is still in the development and testing stages, licensi
 
 Iris-Color-Processor uses Django for GUI backend and uses scikit-learn & OpenCV for image color extraction, leverages K-Means clustering, and outputs results in the OKLCH color space to ensure perceptual uniformity and high-fidelity color analysis. It now also incorporates PyTorch for potential deep learning-based color analysis workflows. Django & scikit-learn are licensed under the BSD 3-Clause License. OpenCV is licensed under the Apache-2.0 License. PyTorch is BSD-style licensed.
 
+Iris-Color-Processor uses uv for dependency and environment management. uv has multiple licenses.
+
 Iris-Color-Processor uses Alpine.js, HTMX & Tailwind CSS for GUI showing. Alpine.js & Tailwind CSS licensed under the MIT License. HTMX licensed under Zero-Clause BSD License.
 
 ## Install ( PyPI )
@@ -43,11 +45,11 @@ For Python Version :
 
 upgrade : `python -m pip install --upgrade pip`
 
-install dependencies : `pip install -r requirements.txt`
+use uv : `python -m pip install uv` & `python -m uv sync`
 
-run scripts : `python scripts/[your_py_scripts.py]`
+run scripts : `python -m uv run scripts/[your_py_scripts.py]`
 
-extract dominant colors : `python scripts/extract_colors.py` (processes `test.jpg` and outputs dominant colors)
+extract dominant colors : `python -m uv run scripts/extract_colors.py` (processes `test.jpg` and outputs dominant colors)
 
 ## Color Standard: OKLCH
 
@@ -69,6 +71,9 @@ OpenCV License : [https://github.com/opencv/opencv/blob/4.x/LICENSE](https://git
 <br>
 
 PyTorch License : [https://github.com/pytorch/pytorch/blob/main/LICENSE](https://github.com/pytorch/pytorch/blob/main/LICENSE)
+<br>
+
+uv License : [https://github.com/astral-sh/uv/blob/main/LICENSE-MIT](https://github.com/astral-sh/uv/blob/main/LICENSE-MIT) & another Apache-2.0 [License](https://github.com/astral-sh/uv/blob/main/LICENSE-APACHE)
 <br>
 
 Alpine.js License : [https://github.com/alpinejs/alpine/blob/main/LICENSE.md](https://github.com/alpinejs/alpine/blob/main/LICENSE.md)
