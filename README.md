@@ -7,7 +7,7 @@
 <br>
 <img src="https://github.com/moosh0114/Iris-img-to-palette/blob/main/logo/logo.png" alt="Iris-Color-Processor" style="height: 280px; width: auto;" />
 
-### Color Solution for Python
+### Refinement Network for Image Color-Extraction
 
 IMPORTANT : This project is still in the development and testing stages, licensing terms may be updated in the future. Please don't do any commercial usage currently.
 
@@ -49,7 +49,7 @@ use uv : `python -m pip install uv` & `python -m uv sync`
 
 run scripts : `python -m uv run scripts/[your_py_scripts.py]`
 
-extract dominant colors : `python -m uv run scripts/extract_colors.py` (processes `test.jpg` and outputs dominant colors)
+extract dominant colors : `python -m uv run scripts/extract_colors.py` ( processes `test.jpg` and outputs dominant colors )
 
 ## Color Standard: OKLCH
 
