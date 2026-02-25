@@ -6,7 +6,12 @@ import cv2
 import numpy as np
 from sklearn.cluster import KMeans
 
-from color_oklch import hex_to_oklch
+try:
+    # When imported as a package (e.g. from FastAPI app)
+    from .color_oklch import hex_to_oklch
+except ImportError:  # pragma: no cover
+    # When executed directly as a script
+    from color_oklch import hex_to_oklch
 
 
 def _resize_for_speed(image_bgr: np.ndarray) -> np.ndarray:

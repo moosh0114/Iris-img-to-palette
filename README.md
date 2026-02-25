@@ -32,24 +32,26 @@ Iris-Color-Processor uses uv for dependency and environment management. uv has m
 
 Iris-Color-Processor uses Alpine.js, HTMX & Tailwind CSS for GUI showing. Alpine.js & Tailwind CSS licensed under the MIT License. HTMX licensed under Zero-Clause BSD License.
 
-## Install ( PyPI )
-### Install Iris-Color-Processor As Package
+## Quickstart (GUI)
 
-## Try GUI To Test
+Prereq: **Python 3.12.x**
 
-For Python Version : 
+```powershell
+python -m pip install -U uv
+uv sync
+uv run uvicorn app.main:app --reload
+```
 
-1. install Python : [https://www.python.org/downloads/](https://www.python.org/downloads/)
+Open `http://127.0.0.1:8000`
 
-## Run Scripts To Test ( Python )
+- **DB**: `data/app.db`
+- **Uploads**: `data/uploads/`
 
-upgrade : `python -m pip install --upgrade pip`
+## Run Script (CLI)
 
-use uv : `python -m pip install uv` & `python -m uv sync`
-
-run scripts : `python -m uv run scripts/[your_py_scripts.py]`
-
-extract dominant colors : `python -m uv run scripts/extract_colors.py` ( processes `test.jpg` and outputs dominant colors )
+```powershell
+uv run python -m scripts.extract_colors
+```
 
 ## Color Standard: OKLCH
 

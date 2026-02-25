@@ -1,0 +1,38 @@
+<div>
+  <div class="muted" style="margin-bottom: 10px;">
+    Saved as <b>#{{ result.id }}</b> • {{ result.created_at }} • n_colors={{ result.n_colors }} • {{ result.filename }}
+  </div>
+
+  <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom: 12px;">
+    {% for c in result.palette %}
+      <div style="min-width: 120px; border: 1px solid rgba(127,127,127,0.25); border-radius: 10px; overflow: hidden;">
+        <div style="height: 44px; background: {{ c.hex }};"></div>
+        <div style="padding: 8px;">
+          <div style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
+            {{ c.hex }}
+          </div>
+          <div class="muted" style="margin-top: 6px;">
+            L={{ c.oklch.L }} c={{ c.oklch.c }} h={{ c.oklch.h }}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+    <button
+      class="btn"
+      type="button"
+      onclick="navigator.clipboard.writeText(document.getElementById('palette-json').innerText)"
+    >
+      Copy JSON
+    </button>
+    <span class="muted">Copied text includes HEX + OKLCH.</span>
+  </div>
+
+  <pre
+    id="palette-json"
+    style="white-space: pre-wrap; margin-top: 12px; border-radius: 10px; border: 1px solid rgba(127,127,127,0.25); padding: 10px; background: rgba(0,0,0,0.04); overflow:auto;"
+  >{{ result.palette_json_pretty }}</pre>
+</div>
+

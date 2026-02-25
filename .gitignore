@@ -20,14 +20,14 @@ wheels/
 .installed.cfg
 *.egg
 
-# uv.lock
-uv.lock
-
 # Virtual environments
 .venv/
 venv/
 ENV/
 env/
+
+# App runtime
+data/
 
 # Django
 *.log
@@ -72,4 +72,4 @@ Thumbs.db
 *.tmp
 .cache/
 
-uv.lock
+

@@ -1,0 +1,22 @@
+{% if results and results|length > 0 %}
+  <div>
+    {% for r in results %}
+      <div class="history-item">
+        <button
+          class="link"
+          hx-get="/api/result/{{ r.id }}"
+          hx-target="#result"
+          hx-swap="innerHTML"
+          type="button"
+          title="Load result #{{ r.id }}"
+        >
+          #{{ r.id }} {{ r.filename }}
+        </button>
+        <span class="muted">{{ r.created_at }}</span>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="muted">No results yet.</div>
+{% endif %}
+

@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Iris Img to Palette</title>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --panel-bg: #ffffff;
+        --text: #1f2937;
+        --muted: #4b5563;
+        --border: #d1d5db;
+        --soft-bg: #f3f4f6;
+        --input-bg: #ffffff;
+        --btn-bg: #e5e7eb;
+      }
+
+      body.dark {
+        --bg: #111827;
+        --panel-bg: #1f2937;
+        --text: #f3f4f6;
+        --muted: #d1d5db;
+        --border: #374151;
+        --soft-bg: #111827;
+        --input-bg: #111827;
+        --btn-bg: #374151;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      .top {
+        display: flex;
+        gap: 16px;
+        align-items: baseline;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+
+      .row-between {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 20px;
+        color: var(--text);
+      }
+
+      .muted {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 360px;
+        gap: 16px;
+        margin-top: 16px;
+      }
+
+      @media (max-width: 980px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .panel {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px;
+        background: var(--panel-bg);
+      }
+
+      label {
+        display: block;
+        font-size: 13px;
+        margin-top: 10px;
+        margin-bottom: 6px;
+        color: var(--text);
+      }
+
+      input[type="file"],
+      input[type="number"] {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 8px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--input-bg);
+        color: var(--text);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 12px;
+        padding: 9px 12px;
+        border-radius: 9px;
+        border: 1px solid var(--border);
+        background: var(--btn-bg);
+        color: var(--text);
+        cursor: pointer;
+      }
+
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .btn-small {
+        margin-top: 0;
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+
+      .preview {
+        width: 100%;
+        max-height: 360px;
+        object-fit: contain;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--soft-bg);
+      }
+
+      .loading {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .history-item {
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .history-item:last-child {
+        border-bottom: 0;
+      }
+
+      .link {
+        background: transparent;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+        text-decoration: underline;
+        color: var(--text);
+      }
+    </style>
+  </head>
+  <body x-data="appState()" :class="{ dark: isDark }">
+    <div class="wrap" x-data="uploader()">
+      <div class="top">
+        <h1>Iris Img to Palette</h1>
+        <button class="btn" type="button" @click="toggleTheme()" style="margin-top: 0;">
+          <span x-text="isDark ? 'Switch to Light' : 'Switch to Dark'"></span>
+        </button>
+      </div>
+      <div class="muted">FastAPI + HTMX + Alpine.js - results saved to SQLite</div>
+
+      <div class="grid">
+        <div class="panel">
+          <div class="muted" style="margin-bottom: 10px;">Upload an image and extract dominant colors (HEX + OKLCH).</div>
+
+          <form
+            hx-post="/api/extract"
+            hx-target="#result"
+            hx-swap="innerHTML"
+            hx-indicator="#busy"
+            enctype="multipart/form-data"
+          >
+            <label>Image</label>
+            <input name="image" type="file" accept="image/*" required @change="onPick($event)" />
+
+            <label>n_colors</label>
+            <input name="n_colors" type="number" min="1" max="12" value="3" />
+
+            <button class="btn" type="submit">Extract</button>
+            <span id="busy" class="loading" style="display:none;" hx-indicator>Working...</span>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="muted" style="margin-bottom: 10px;">Preview</div>
+          <template x-if="previewUrl">
+            <img class="preview" :src="previewUrl" alt="preview" />
+          </template>
+          <template x-if="!previewUrl">
+            <div class="muted">No image selected.</div>
+          </template>
+        </div>
+
+        <div class="panel">
+          <div class="row-between" style="margin-bottom: 10px;">
+            <div class="muted">History</div>
+            <button
+              class="btn btn-small"
+              type="button"
+              hx-post="/api/history/clear"
+              hx-target="#history"
+              hx-swap="innerHTML"
+              hx-confirm="Clear all history records?"
+            >
+              Clear History
+            </button>
+          </div>
+          <div id="history" hx-get="/history" hx-trigger="load" hx-swap="innerHTML">
+            <div class="muted">Loading...</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 16px;">
+        <div class="panel" id="result">
+          <div class="muted">Result will appear here.</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function appState() {
+        return {
+          isDark: false,
+          toggleTheme() {
+            this.isDark = !this.isDark;
+          },
+        };
+      }
+
+      function uploader() {
+        return {
+          previewUrl: "",
+          onPick(e) {
+            const f = e?.target?.files?.[0];
+            if (!f) {
+              this.previewUrl = "";
+              return;
+            }
+            this.previewUrl = URL.createObjectURL(f);
+          },
+        };
+      }
+    </script>
+  </body>
+</html>
