@@ -13,11 +13,11 @@ IMPORTANT : This project is still in the development and testing stages, licensi
 
 ## Project Dependencies Guide
 
-[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://github.com/fastapi/fastapi)
-[![Strawberry GraphQL](https://img.shields.io/badge/Strawberry_GraphQL-FC5A8D?style=for-the-badge&logo=graphql&logoColor=white)](https://github.com/strawberry-graphql/strawberry)
-[![scikit-learn](https://img.shields.io/badge/scikit_learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)](https://github.com/scikit-learn/scikit-learn)
-[![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)](https://github.com/opencv/opencv)
 [![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://github.com/pytorch/pytorch)
+[![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)](https://github.com/opencv/opencv)
+[![scikit-learn](https://img.shields.io/badge/scikit_learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)](https://github.com/scikit-learn/scikit-learn)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://github.com/fastapi/fastapi)
+[![Strawberry GraphQL](https://img.shields.io/badge/Strawberry_GraphQL-3776AB?style=for-the-badge&logo=graphql&logoColor=white)](https://github.com/strawberry-graphql/strawberry)
 
 **( GUI )**
 
@@ -69,6 +69,7 @@ FastAPI License : [https://github.com/fastapi/fastapi/blob/master/LICENSE](https
 
 Strawberry GraphQL License : [https://github.com/strawberry-graphql/strawberry/blob/main/LICENSE](https://github.com/strawberry-graphql/strawberry/blob/main/LICENSE)
 <br>
+
 scikit-learn License : [https://github.com/scikit-learn/scikit-learn?tab=BSD-3-Clause-1-ov-file#readme](https://github.com/scikit-learn/scikit-learn?tab=BSD-3-Clause-1-ov-file#readme)
 <br>
 
