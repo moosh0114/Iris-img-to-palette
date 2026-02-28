@@ -132,3 +132,9 @@ def clear_results(db_path: Path) -> None:
         conn.execute("DELETE FROM palette_results")
         conn.commit()
 
+
+def list_image_paths(db_path: Path) -> list[str]:
+    with sqlite3.connect(db_path) as conn:
+        rows = conn.execute("SELECT image_path FROM palette_results").fetchall()
+    return [str(row[0]) for row in rows if row and row[0]]
+

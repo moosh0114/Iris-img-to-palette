@@ -1,5 +1,6 @@
 import hashlib
 import json
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
@@ -11,13 +12,15 @@ from strawberry.types import Info
 
 from scripts.extract_colors import extract_dominant_colors
 
-from .storage import PaletteResult, clear_results, get_result, list_results, save_result
+from .storage import PaletteResult, clear_results, get_result, list_image_paths, list_results, save_result
 
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "data"
 UPLOAD_DIR = DATA_DIR / "uploads"
 DB_PATH = DATA_DIR / "app.db"
+MAX_UPLOAD_BYTES = 10 * 1024 * 1024
+UPLOAD_CHUNK_SIZE = 1024 * 1024
 
 
 @dataclass(frozen=True)
@@ -33,7 +36,7 @@ async def context_getter() -> Context:
 class UploadLike(Protocol):
     filename: str | None
 
-    async def read(self) -> bytes: ...
+    async def read(self, size: int = -1) -> bytes: ...
 
 
 def _clamp_n_colors(value: int) -> int:
@@ -53,18 +56,8 @@ def _palette_json_pretty(palette: list[dict[str, Any]]) -> str:
     return json.dumps(palette, ensure_ascii=False, indent=2)
 
 
-def _build_result(content: bytes, original_name: str, n_colors: int, db_path: Path, upload_dir: Path) -> PaletteResult:
+def _build_result(upload_path: Path, original_name: str, sha: str, n_colors: int, db_path: Path) -> PaletteResult:
     n = _clamp_n_colors(n_colors)
-    if not content:
-        raise ValueError("Empty upload.")
-
-    sha = hashlib.sha256(content).hexdigest()
-    safe_name = _sanitize_filename(original_name)
-    upload_dir.mkdir(parents=True, exist_ok=True)
-
-    upload_path = upload_dir / f"{sha[:16]}_{safe_name}"
-    upload_path.write_bytes(content)
-
     palette = extract_dominant_colors(str(upload_path), n_colors=n)
     new_id = save_result(
         db_path=db_path,
@@ -83,12 +76,52 @@ def _build_result(content: bytes, original_name: str, n_colors: int, db_path: Pa
 
 async def extract_and_store_upload(upload: UploadLike, n_colors: int, db_path: Path, upload_dir: Path) -> PaletteResult:
     original_name = Path(upload.filename or "upload").name
-    content = await upload.read()
-    return await run_in_threadpool(_build_result, content, original_name, n_colors, db_path, upload_dir)
+    safe_name = _sanitize_filename(original_name)
+    upload_dir.mkdir(parents=True, exist_ok=True)
+
+    temp_path = upload_dir / f".tmp_{os.urandom(8).hex()}"
+    sha256 = hashlib.sha256()
+    total_bytes = 0
+
+    try:
+        with temp_path.open("wb") as f:
+            while True:
+                chunk = await upload.read(UPLOAD_CHUNK_SIZE)
+                if not chunk:
+                    break
+                total_bytes += len(chunk)
+                if total_bytes > MAX_UPLOAD_BYTES:
+                    raise ValueError(f"Upload too large. Max {MAX_UPLOAD_BYTES // (1024 * 1024)}MB.")
+                sha256.update(chunk)
+                f.write(chunk)
+
+        if total_bytes == 0:
+            raise ValueError("Empty upload.")
+
+        sha = sha256.hexdigest()
+        final_path = upload_dir / f"{sha[:16]}_{safe_name}"
+        temp_path.replace(final_path)
+    except Exception:
+        if temp_path.exists():
+            temp_path.unlink()
+        raise
+
+    try:
+        return await run_in_threadpool(_build_result, final_path, original_name, sha, n_colors, db_path)
+    except Exception:
+        # Remove orphan upload if palette extraction or DB save fails.
+        if final_path.exists():
+            final_path.unlink()
+        raise
 
 
 async def clear_history_records(db_path: Path) -> None:
+    paths = await run_in_threadpool(list_image_paths, db_path)
     await run_in_threadpool(clear_results, db_path)
+    for path in paths:
+        p = Path(path)
+        if p.exists():
+            p.unlink()
 
 
 async def load_history(db_path: Path, *, limit: int = 20) -> list[PaletteResult]:

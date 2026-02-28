@@ -42,7 +42,7 @@ upgrade : `python -m pip install --upgrade pip`
 use uv : `python -m pip install uv` & `python -m uv sync`
 
 ```shell
-uv run uvicorn app.main:app --reload
+python -m uv run uvicorn app.main:app --reload
 ```
 
 Open `http://127.0.0.1:8000`
