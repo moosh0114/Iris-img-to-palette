@@ -50,7 +50,7 @@ Open `http://127.0.0.1:8000`
 **DB** : `data/app.db`
 **Uploads** : `data/uploads/`
 
-## Run Script (CLI)
+## Run Script ( CLI )
 
 ```shell
 uv run python -m scripts.extract_colors
