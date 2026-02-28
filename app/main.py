@@ -48,7 +48,8 @@ def index(request: Request) -> HTMLResponse:
 
 @app.get("/history", response_class=HTMLResponse)
 async def history(request: Request) -> HTMLResponse:
-    results = await load_history(DB_PATH, limit=20)
+    history_rows = await load_history(DB_PATH, limit=20)
+    results = [format_result_for_template(item) for item in history_rows]
     return templates.TemplateResponse(
         "partials/history.html",
         {
@@ -101,7 +102,8 @@ async def api_extract(
     except ValueError as exc:
         return HTMLResponse(f"<div class='panel'>{exc}</div>", status_code=400)
 
-    results = await load_history(DB_PATH, limit=20)
+    history_rows = await load_history(DB_PATH, limit=20)
+    results = [format_result_for_template(item) for item in history_rows]
     return templates.TemplateResponse(
         "partials/extract_response.html",
         {

@@ -1,22 +1,32 @@
 {% if results and results|length > 0 %}
-  <div>
-    {% for r in results %}
-      <div class="flex items-baseline justify-between gap-[10px] border-b border-slate-300 py-2 last:border-b-0 dark:border-slate-700">
-        <button
-          class="cursor-pointer bg-transparent p-0 text-slate-800 underline dark:text-slate-100"
-          hx-get="/api/result/{{ r.id }}"
-          hx-target="#result"
-          hx-swap="innerHTML"
-          type="button"
-          title="Load result #{{ r.id }}"
-        >
-          #{{ r.id }} {{ r.filename }}
-        </button>
-        <span class="text-[13px] text-slate-600 dark:text-slate-300">{{ r.created_at }}</span>
-      </div>
+  <div class="space-y-3">
+    {% for result in results %}
+      <button
+        class="w-full rounded-2xl border border-white/10 bg-[#424242] p-3 text-left transition hover:bg-[#4d4d4d]"
+        hx-get="/api/result/{{ result.id }}"
+        hx-target="#result"
+        hx-swap="innerHTML"
+        type="button"
+        title="Load result #{{ result.id }}"
+      >
+        <div class="flex items-center gap-3">
+          <img
+            src="{{ result.image_url }}"
+            alt="{{ result.filename }}"
+            class="h-12 w-12 flex-shrink-0 rounded-xl object-cover"
+          />
+          <div class="min-w-0 flex-1">
+            <div class="truncate text-[14pt] font-semibold text-white">#{{ result.id }} {{ result.filename }}</div>
+            <div class="mt-2 flex items-center gap-1.5">
+              {% for c in result.palette[:3] %}
+                <span class="h-4 w-4 rounded-sm border border-white/20" style="background-color: {{ c.hex }};"></span>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </button>
     {% endfor %}
   </div>
 {% else %}
-  <div class="text-[13px] text-slate-600 dark:text-slate-300">No results yet.</div>
+  <div class="rounded-2xl border border-white/10 bg-[#424242] p-4 text-[14pt] text-[#aaaaaa]">No results yet.</div>
 {% endif %}
-
