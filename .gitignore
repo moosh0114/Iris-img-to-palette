@@ -20,6 +20,9 @@ wheels/
 .installed.cfg
 *.egg
 
+# Lock File
+uv.lock
+
 # Virtual environments
 .venv/
 venv/

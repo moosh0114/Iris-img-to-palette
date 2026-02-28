@@ -1,5 +1,4 @@
-from __future__ import annotations
-
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, Request, UploadFile
@@ -8,6 +7,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from strawberry.fastapi import GraphQLRouter
+from html import escape
 
 from .graphql_schema import (
     DB_PATH,
@@ -25,15 +25,17 @@ from .storage import init_db
 
 templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent / "templates"))
 
-app = FastAPI(title="Iris Img to Palette")
-app.include_router(GraphQLRouter(schema, context_getter=context_getter), prefix="/graphql", tags=["graphql"])
-app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR), check_dir=False), name="uploads")
 
-
-@app.on_event("startup")
-async def _startup() -> None:
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     await run_in_threadpool(init_db, DB_PATH)
     await run_in_threadpool(UPLOAD_DIR.mkdir, parents=True, exist_ok=True)
+    yield
+
+
+app = FastAPI(title="Iris Img to Palette", lifespan=lifespan)
+app.include_router(GraphQLRouter(schema, context_getter=context_getter), prefix="/graphql", tags=["graphql"])
+app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR), check_dir=False), name="uploads")
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -100,7 +102,7 @@ async def api_extract(
             upload_dir=UPLOAD_DIR,
         )
     except ValueError as exc:
-        return HTMLResponse(f"<div class='panel'>{exc}</div>", status_code=400)
+        return HTMLResponse(f"<div class='panel'>{escape(str(exc))}</div>", status_code=400)
 
     history_rows = await load_history(DB_PATH, limit=20)
     results = [format_result_for_template(item) for item in history_rows]
