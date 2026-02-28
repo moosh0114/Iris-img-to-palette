@@ -1,4 +1,4 @@
-# Iris-Color-Processor
+# Iris-AI
 
 [![GitHub last commit](https://img.shields.io/github/last-commit/moosh0114/Iris-img-to-palette.svg)](https://github.com/moosh0114/Iris-img-to-palette)
 [![GitHub repo size](https://img.shields.io/github/repo-size/moosh0114/Iris-img-to-palette.svg)](https://github.com/moosh0114/Iris-img-to-palette)
@@ -27,11 +27,11 @@ IMPORTANT : This project is still in the development and testing stages, licensi
 
 **[ for Dependencies Details please see the end of this README ]**
 
-Iris-Color-Processor uses FastAPI with Strawberry GraphQL for backend APIs and GUI integration, and uses scikit-learn & OpenCV for image color extraction, leverages K-Means clustering, and outputs results in the OKLCH color space to ensure perceptual uniformity and high-fidelity color analysis. It now also incorporates PyTorch for potential deep learning-based color analysis workflows. FastAPI is MIT licensed, Strawberry GraphQL is MIT licensed, scikit-learn is licensed under the BSD 3-Clause License, OpenCV is licensed under the Apache-2.0 License, and PyTorch is BSD-style licensed.
+Iris uses FastAPI with Strawberry GraphQL for backend APIs and GUI integration, and uses scikit-learn & OpenCV for image color extraction, leverages K-Means clustering, and outputs results in the OKLCH color space to ensure perceptual uniformity and high-fidelity color analysis. It now also incorporates PyTorch for potential deep learning-based color analysis workflows. FastAPI is MIT licensed, Strawberry GraphQL is MIT licensed, scikit-learn is licensed under the BSD 3-Clause License, OpenCV is licensed under the Apache-2.0 License, and PyTorch is BSD-style licensed.
 
-Iris-Color-Processor uses uv for dependency and environment management. uv has multiple licenses.
+Iris uses uv for dependency and environment management. uv has multiple licenses.
 
-Iris-Color-Processor uses Alpine.js, HTMX & Tailwind CSS for GUI showing. Alpine.js & Tailwind CSS licensed under the MIT License. HTMX licensed under Zero-Clause BSD License.
+Iris uses Alpine.js, HTMX & Tailwind CSS for GUI showing. Alpine.js & Tailwind CSS licensed under the MIT License. HTMX licensed under Zero-Clause BSD License.
 
 ## Quickstart ( GUI )
 
