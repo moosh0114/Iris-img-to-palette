@@ -13,7 +13,8 @@ IMPORTANT : This project is still in the development and testing stages, licensi
 
 ## Project Dependencies Guide
 
-[![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)](https://github.com/django/django)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://github.com/fastapi/fastapi)
+[![Strawberry GraphQL](https://img.shields.io/badge/Strawberry_GraphQL-FC5A8D?style=for-the-badge&logo=graphql&logoColor=white)](https://github.com/strawberry-graphql/strawberry)
 [![scikit-learn](https://img.shields.io/badge/scikit_learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)](https://github.com/scikit-learn/scikit-learn)
 [![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)](https://github.com/opencv/opencv)
 [![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://github.com/pytorch/pytorch)
@@ -26,7 +27,7 @@ IMPORTANT : This project is still in the development and testing stages, licensi
 
 **[ for Dependencies Details please see the end of this README ]**
 
-Iris-Color-Processor uses Django for GUI backend and uses scikit-learn & OpenCV for image color extraction, leverages K-Means clustering, and outputs results in the OKLCH color space to ensure perceptual uniformity and high-fidelity color analysis. It now also incorporates PyTorch for potential deep learning-based color analysis workflows. Django & scikit-learn are licensed under the BSD 3-Clause License. OpenCV is licensed under the Apache-2.0 License. PyTorch is BSD-style licensed.
+Iris-Color-Processor uses FastAPI with Strawberry GraphQL for backend APIs and GUI integration, and uses scikit-learn & OpenCV for image color extraction, leverages K-Means clustering, and outputs results in the OKLCH color space to ensure perceptual uniformity and high-fidelity color analysis. It now also incorporates PyTorch for potential deep learning-based color analysis workflows. FastAPI is MIT licensed, Strawberry GraphQL is MIT licensed, scikit-learn is licensed under the BSD 3-Clause License, OpenCV is licensed under the Apache-2.0 License, and PyTorch is BSD-style licensed.
 
 Iris-Color-Processor uses uv for dependency and environment management. uv has multiple licenses.
 
@@ -63,9 +64,11 @@ Color values are reported with 6-decimal precision for scientific consistency.
 
 ## Project Dependencies Details
 
-Django License : [https://github.com/django/django/blob/main/LICENSE](https://github.com/django/django/blob/main/LICENSE)
+FastAPI License : [https://github.com/fastapi/fastapi/blob/master/LICENSE](https://github.com/fastapi/fastapi/blob/master/LICENSE)
 <br>
 
+Strawberry GraphQL License : [https://github.com/strawberry-graphql/strawberry/blob/main/LICENSE](https://github.com/strawberry-graphql/strawberry/blob/main/LICENSE)
+<br>
 scikit-learn License : [https://github.com/scikit-learn/scikit-learn?tab=BSD-3-Clause-1-ov-file#readme](https://github.com/scikit-learn/scikit-learn?tab=BSD-3-Clause-1-ov-file#readme)
 <br>
 
@@ -85,3 +88,4 @@ HTMX License : [https://github.com/bigskysoftware/htmx/blob/master/LICENSE](http
 <br>
 
 Tailwind CSS License : [https://github.com/tailwindlabs/tailwindcss/blob/main/LICENSE](https://github.com/tailwindlabs/tailwindcss/blob/main/LICENSE)
+
