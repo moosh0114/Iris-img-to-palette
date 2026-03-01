@@ -3,17 +3,17 @@
   <div class="flex flex-col lg:flex-row flex-wrap items-center justify-between gap-4">
     <button
       type="button"
-      class="w-full lg:w-45 h-15 my-4 border border-[#D3D3D3] rounded-xl"
+      class="btn-main iris-shadow-main"
       onclick="copyPaletteJson(this)"
     >
-      <span class="text-lg text-[#989898]">COPY JSON</span>
+      <span class="text-lg text-[var(--primary-color-two)]">COPY JSON</span>
     </button>
 
-    <div class="flex flex-col sm:flex-row items-center gap-4 uppercase tracking-wide text-[#9f9f9f]">
+    <div class="flex flex-col sm:flex-row items-center gap-4 uppercase tracking-wide text-[var(--primary-color-two)]">
       <span class="text-2xl">Extract</span>
       <button
         type="button"
-        class="h-10 w-10 rounded-md bg-[#424242] text-2xl text-[#a9a9a9]"
+        class="btn-num-control"
         @pointerdown.prevent="startAdjust(-1)"
         @pointerup="stopAdjust()"
         @pointerleave="stopAdjust()"
@@ -22,10 +22,10 @@
       >
         <span class="text-2xl"> - </span>
       </button>
-      <span class="text-center text-2xl text-[#a9a9a9]" x-text="nColors"></span>
+      <span class="text-center text-2xl text-[var(--primary-color-three)]" x-text="nColors"></span>
       <button
         type="button"
-        class="h-10 w-10 rounded-md bg-[#424242] text-2xl text-[#a9a9a9]"
+        class="btn-num-control"
         @pointerdown.prevent="startAdjust(1)"
         @pointerup="stopAdjust()"
         @pointerleave="stopAdjust()"
@@ -40,9 +40,9 @@
     <button
       type="submit"
       form="extract-form"
-      class="w-full lg:w-45 h-15 my-4 border border-[#D3D3D3] rounded-xl"
+      class="btn-main iris-shadow-main"
     >
-      <span class="text-2xl text-[#989898]">GO</span>
+      <span class="text-2xl text-[var(--primary-color-two)]">GO</span>
     </button>
 
     <div class="w-full grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
@@ -56,7 +56,7 @@
         </div>
       {% endfor %}
       {% for _ in range(12 - (visible_palette|length)) %}
-        <div class="h-16 sm:h-22 rounded-xl bg-[#454545]"></div>
+        <div class="h-16 sm:h-22 rounded-xl bg-[var(--primary-color)]"></div>
       {% endfor %}
     </div>
   </div>

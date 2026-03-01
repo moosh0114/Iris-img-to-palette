@@ -70,11 +70,19 @@ function copyPaletteJson(button) {
     if (!node) return;
     navigator.clipboard.writeText(node.innerText || node.textContent || "");
     if (!button) return;
-    const original = button.textContent;
-    button.textContent = "COPIED";
+    const originalHtml = button.innerHTML;
+    const originalClass = button.className;
+    const label = button.querySelector("span");
+    if (label) {
+        label.textContent = "COPIED";
+    } else {
+        button.textContent = "COPIED";
+    }
+    button.classList.add("opacity-50");
     button.disabled = true;
     window.setTimeout(() => {
-        button.textContent = original;
+        button.innerHTML = originalHtml;
+        button.className = originalClass;
         button.disabled = false;
     }, 900);
 }
