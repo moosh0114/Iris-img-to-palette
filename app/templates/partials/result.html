@@ -1,64 +1,63 @@
-<div class="flex h-full flex-col justify-between gap-2">
+<div class="flex h-full flex-col justify-between gap-4">
   {% set visible_palette = result.palette[:12] %}
-  <div class="grid h-[52%] grid-cols-3 gap-2 sm:grid-cols-6">
-    {% for c in visible_palette %}
-      <div
-        class="palette-swatch flex h-20 min-w-0 items-center justify-center rounded-[14px] px-2 text-center text-[14pt] font-semibold tracking-wide sm:h-24"
-        data-hex="{{ c.hex }}"
-        style="background-color: {{ c.hex }};"
-      >
-        {{ c.hex|replace('#', '')|upper }}
-      </div>
-    {% endfor %}
-    {% for _ in range(12 - (visible_palette|length)) %}
-      <div class="h-20 min-w-0 rounded-[14px] bg-[#454545] sm:h-24"></div>
-    {% endfor %}
-  </div>
+  <div class="flex flex-col lg:flex-row flex-wrap items-center justify-between gap-4">
+    <button
+      type="button"
+      class="w-full lg:w-45 h-15 my-4 border border-[#D3D3D3] rounded-xl"
+      onclick="copyPaletteJson(this)"
+    >
+      <span class="text-lg text-[#989898]">COPY JSON</span>
+    </button>
 
-  <div class="flex flex-wrap items-center justify-between gap-2">
-    <div class="flex items-center gap-2 text-[14pt] uppercase tracking-wide text-[#9f9f9f]">
-      <span>Extract</span>
+    <div class="flex flex-col sm:flex-row items-center gap-4 uppercase tracking-wide text-[#9f9f9f]">
+      <span class="text-2xl">Extract</span>
       <button
         type="button"
-        class="h-10 w-10 rounded-[10px] bg-[#1f1f1f] text-[14pt] text-[#a9a9a9]"
+        class="h-10 w-10 rounded-md bg-[#424242] text-2xl text-[#a9a9a9]"
         @pointerdown.prevent="startAdjust(-1)"
         @pointerup="stopAdjust()"
         @pointerleave="stopAdjust()"
         @pointercancel="stopAdjust()"
         aria-label="Decrease n_colors"
       >
-        -
+        <span class="text-2xl"> - </span>
       </button>
-      <span class="min-w-[1.2em] text-center text-[14pt] text-[#a9a9a9]" x-text="nColors"></span>
+      <span class="text-center text-2xl text-[#a9a9a9]" x-text="nColors"></span>
       <button
         type="button"
-        class="h-10 w-10 rounded-[10px] bg-[#1f1f1f] text-[14pt] text-[#a9a9a9]"
+        class="h-10 w-10 rounded-md bg-[#424242] text-2xl text-[#a9a9a9]"
         @pointerdown.prevent="startAdjust(1)"
         @pointerup="stopAdjust()"
         @pointerleave="stopAdjust()"
         @pointercancel="stopAdjust()"
         aria-label="Increase n_colors"
       >
-        +
+        <span class="text-2xl"> + </span>
       </button>
-      <span>Color</span>
+      <span class="text-2xl">Color</span>
     </div>
 
-    <div class="flex items-center gap-2">
-      <button
-        type="submit"
-        form="extract-form"
-        class="inline-flex h-14 w-36 items-center justify-center rounded-full bg-gradient-to-r from-[#5046e5] to-[#9233ea] text-[18pt] font-semibold leading-none text-white shadow-lg shadow-black/25 transition hover:brightness-110"
-      >
-        GO
-      </button>
-      <button
-        type="button"
-        class="inline-flex h-14 w-36 items-center justify-center whitespace-nowrap rounded-full bg-[#6a6a6a] text-center text-[14pt] font-medium leading-none text-[#f1f1f1] transition hover:bg-[#7a7a7a]"
-        onclick="copyPaletteJson(this)"
-      >
-        COPY JSON
-      </button>
+    <button
+      type="submit"
+      form="extract-form"
+      class="w-full lg:w-45 h-15 my-4 border border-[#D3D3D3] rounded-xl"
+    >
+      <span class="text-2xl text-[#989898]">GO</span>
+    </button>
+
+    <div class="w-full grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+      {% for c in visible_palette %}
+        <div
+          class="palette-swatch flex h-16 sm:h-22 min-w-0 items-center justify-center rounded-xl px-2 text-center text-lg tracking-wide"
+          data-hex="{{ c.hex }}"
+          style="background-color: {{ c.hex }};"
+        >
+          {{ c.hex|replace('#', '')|upper }}
+        </div>
+      {% endfor %}
+      {% for _ in range(12 - (visible_palette|length)) %}
+        <div class="h-16 sm:h-22 rounded-xl bg-[#454545]"></div>
+      {% endfor %}
     </div>
   </div>
 

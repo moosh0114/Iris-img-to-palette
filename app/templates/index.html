@@ -5,15 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Iris Img to Palette</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prosto+One&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', path='css/index.css') }}" />
+
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   </head>
-  <body class="h-screen overflow-hidden bg-[#1f1f1f] p-1 text-[14pt] text-[#e5e5e5] sm:p-2">
-    <div class="mx-auto h-[calc(100vh-0.5rem)] w-full rounded-[24px] bg-[#333333] p-2 sm:h-[calc(100vh-1rem)] sm:p-3" x-data="uploader()">
+  <body class="">
+    <div class="w-full p-4" x-data="uploader()">
       <form
         id="extract-form"
-        class="flex h-full flex-col gap-2"
+        class="flex h-full flex-col gap-4"
         hx-post="/api/extract"
         hx-target="#result"
         hx-swap="innerHTML"
@@ -35,7 +41,7 @@
         <input type="hidden" name="n_colors" x-model="nColors" />
 
         <div
-          class="relative min-h-0 flex-1 cursor-pointer overflow-hidden rounded-[20px] border border-white/10 bg-[#424242] p-2 text-center"
+          class="relative min-h-120 max-h-120 flex items-center justify-center p-4 text-center rounded-2xl cursor-pointer bg-[#424242]"
           :class="dropActive ? 'ring-2 ring-white/60' : ''"
           @click="$refs.fileInput.click()"
           @dragover.prevent="dropActive = true"
@@ -43,74 +49,65 @@
           @drop.prevent="onDrop($event)"
         >
           <template x-if="!previewUrl">
-            <div class="flex h-full w-full items-center justify-center">
-              <p class="font-semibold tracking-wide text-[#ababab]">Upload / Drag Image Here</p>
+            <div class="h-full w-full flex items-center justify-center">
+              <p class="tracking-wide text-[#ababab]">Upload / Drag Image Here</p>
             </div>
           </template>
           <template x-if="previewUrl">
-            <img :src="previewUrl" alt="preview" class="h-full w-full rounded-[16px] object-contain" />
+            <img :src="previewUrl" alt="preview" class="rounded-[16px] object-contain" />
           </template>
         </div>
 
-        <div id="result" class="h-[250px] flex-none overflow-hidden rounded-[16px] sm:h-[300px]">
-          <div class="flex h-full flex-col justify-between gap-2">
-            <div class="grid h-[52%] grid-cols-3 gap-2 sm:grid-cols-6">
-              <div class="rounded-[14px] bg-[#454545]"></div>
-              <div class="rounded-[14px] bg-[#454545]"></div>
-              <div class="rounded-[14px] bg-[#454545]"></div>
-              <div class="hidden rounded-[14px] bg-[#454545] sm:block"></div>
-              <div class="hidden rounded-[14px] bg-[#454545] sm:block"></div>
-              <div class="hidden rounded-[14px] bg-[#454545] sm:block"></div>
-              <div class="rounded-[14px] bg-[#454545]"></div>
-              <div class="rounded-[14px] bg-[#454545]"></div>
-              <div class="rounded-[14px] bg-[#454545]"></div>
-              <div class="hidden rounded-[14px] bg-[#454545] sm:block"></div>
-              <div class="hidden rounded-[14px] bg-[#454545] sm:block"></div>
-              <div class="hidden rounded-[14px] bg-[#454545] sm:block"></div>
-            </div>
+        <div id="result" class="flex-none rounded-2xl">
+          <div class="flex h-full flex-col justify-between gap-4">
+            <div class="flex flex-col lg:flex-row flex-wrap items-center justify-between gap-4">
+              <button
+                type="button"
+                class="w-full lg:w-45 h-15 my-4 border border-[#D3D3D3] rounded-xl"
+                onclick="copyPaletteJson(this)"
+              >
+                <span class="text-lg text-[#989898]">COPY JSON</span>
+              </button>
 
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <div class="flex items-center gap-2 text-[14pt] uppercase tracking-wide text-[#9f9f9f]">
-                <span>Extract</span>
+              <div class="flex flex-col sm:flex-row items-center gap-4 uppercase tracking-wide text-[#9f9f9f]">
+                <span class="text-2xl">Extract</span>
                 <button
                   type="button"
-                  class="h-10 w-10 rounded-[10px] bg-[#1f1f1f] text-[14pt] text-[#a9a9a9]"
+                  class="h-10 w-10 rounded-md bg-[#424242] text-2xl text-[#a9a9a9]"
                   @pointerdown.prevent="startAdjust(-1)"
                   @pointerup="stopAdjust()"
                   @pointerleave="stopAdjust()"
                   @pointercancel="stopAdjust()"
                   aria-label="Decrease n_colors"
                 >
-                  -
+                  <span class="text-2xl"> - </span>
                 </button>
-                <span class="min-w-[1.2em] text-center text-[14pt] text-[#a9a9a9]" x-text="nColors"></span>
+                <span class="text-center text-2xl text-[#a9a9a9]" x-text="nColors"></span>
                 <button
                   type="button"
-                  class="h-10 w-10 rounded-[10px] bg-[#1f1f1f] text-[14pt] text-[#a9a9a9]"
+                  class="h-10 w-10 rounded-md bg-[#424242] text-2xl text-[#a9a9a9]"
                   @pointerdown.prevent="startAdjust(1)"
                   @pointerup="stopAdjust()"
                   @pointerleave="stopAdjust()"
                   @pointercancel="stopAdjust()"
                   aria-label="Increase n_colors"
                 >
-                  +
+                  <span class="text-2xl"> + </span>
                 </button>
-                <span>Color</span>
+                <span class="text-2xl">Color</span>
               </div>
-              <div class="flex items-center gap-2">
-                <button
-                  type="submit"
-                  class="inline-flex h-14 w-36 items-center justify-center rounded-full bg-gradient-to-r from-[#5046e5] to-[#9233ea] text-[18pt] font-semibold leading-none text-white shadow-lg shadow-black/25 transition hover:brightness-110"
-                >
-                  GO
-                </button>
-                <button
-                  type="button"
-                  class="inline-flex h-14 w-36 items-center justify-center whitespace-nowrap rounded-full bg-[#6a6a6a] text-center text-[14pt] font-medium leading-none text-[#f1f1f1] transition hover:bg-[#7a7a7a]"
-                  onclick="copyPaletteJson(this)"
-                >
-                  COPY JSON
-                </button>
+
+              <button
+                type="submit"
+                class="w-full lg:w-45 h-15 my-4 border border-[#D3D3D3] rounded-xl"
+              >
+                <span class="text-2xl text-[#989898]">GO</span>
+              </button>
+
+              <div class="w-full grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                {% for _ in range(12) %}
+                  <div class="h-16 sm:h-22 rounded-xl bg-[#454545]"></div>
+                {% endfor %}
               </div>
             </div>
           </div>
@@ -118,91 +115,6 @@
       </form>
     </div>
 
-    <script>
-      function applySwatchTextContrast(root = document) {
-        const swatches = root.querySelectorAll(".palette-swatch[data-hex]");
-        swatches.forEach((swatch) => {
-          const hex = String(swatch.dataset.hex || "").trim().replace("#", "");
-          if (!/^[0-9a-fA-F]{6}$/.test(hex)) return;
-          const r = parseInt(hex.slice(0, 2), 16);
-          const g = parseInt(hex.slice(2, 4), 16);
-          const b = parseInt(hex.slice(4, 6), 16);
-          const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-          swatch.style.color = luminance < 0.52 ? "#f3f3f3" : "#1f1f1f";
-        });
-      }
-
-      function uploader() {
-        return {
-          nColors: "5",
-          previewUrl: "",
-          dropActive: false,
-          holdDelayTimer: null,
-          holdRepeatTimer: null,
-          sanitizeNColors() {
-            const digits = String(this.nColors ?? "").replace(/[^\d]/g, "");
-            let value = parseInt(digits || "5", 10);
-            if (Number.isNaN(value)) value = 5;
-            this.nColors = String(Math.min(12, Math.max(1, value)));
-          },
-          stepNColors(delta) {
-            const current = parseInt(this.nColors, 10);
-            const base = Number.isNaN(current) ? 5 : current;
-            this.nColors = String(Math.min(12, Math.max(1, base + delta)));
-          },
-          startAdjust(delta) {
-            this.stopAdjust();
-            this.stepNColors(delta);
-            this.holdDelayTimer = window.setTimeout(() => {
-              this.holdRepeatTimer = window.setInterval(() => this.stepNColors(delta), 90);
-            }, 500);
-          },
-          stopAdjust() {
-            if (this.holdDelayTimer) window.clearTimeout(this.holdDelayTimer);
-            if (this.holdRepeatTimer) window.clearInterval(this.holdRepeatTimer);
-            this.holdDelayTimer = null;
-            this.holdRepeatTimer = null;
-          },
-          setFile(file) {
-            if (!file || !file.type.startsWith("image/")) return;
-            if (this.previewUrl) URL.revokeObjectURL(this.previewUrl);
-            const dt = new DataTransfer();
-            dt.items.add(file);
-            this.$refs.fileInput.files = dt.files;
-            this.previewUrl = URL.createObjectURL(file);
-          },
-          onPick(e) {
-            const file = e?.target?.files?.[0];
-            if (!file) return;
-            this.setFile(file);
-          },
-          onDrop(e) {
-            this.dropActive = false;
-            const file = e?.dataTransfer?.files?.[0];
-            if (!file) return;
-            this.setFile(file);
-          },
-        };
-      }
-
-      function copyPaletteJson(button) {
-        const node = document.getElementById("palette-json");
-        if (!node) return;
-        navigator.clipboard.writeText(node.innerText || node.textContent || "");
-        if (!button) return;
-        const original = button.textContent;
-        button.textContent = "COPIED";
-        button.disabled = true;
-        window.setTimeout(() => {
-          button.textContent = original;
-          button.disabled = false;
-        }, 900);
-      }
-
-      document.addEventListener("DOMContentLoaded", () => applySwatchTextContrast());
-      document.body.addEventListener("htmx:afterSwap", (event) => {
-        if (event?.target?.id === "result") applySwatchTextContrast(event.target);
-      });
-    </script>
+    <script src="{{ url_for('static', path='js/index.js') }}"></script>
   </body>
 </html>

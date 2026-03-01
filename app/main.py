@@ -36,6 +36,8 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Iris Img to Palette", lifespan=lifespan)
 app.include_router(GraphQLRouter(schema, context_getter=context_getter), prefix="/graphql", tags=["graphql"])
 app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR), check_dir=False), name="uploads")
+# Serve static files (CSS, JavaScript, images) from the "static" directory
+app.mount("/static", StaticFiles(directory=str(Path(__file__).resolve().parent / "static")), name="static")
 
 
 @app.get("/", response_class=HTMLResponse)

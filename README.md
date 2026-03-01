@@ -17,13 +17,14 @@ IMPORTANT : This project is still in the development and testing stages, licensi
 [![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)](https://github.com/opencv/opencv)
 [![scikit-learn](https://img.shields.io/badge/scikit_learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)](https://github.com/scikit-learn/scikit-learn)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://github.com/fastapi/fastapi)
-[![Strawberry GraphQL](https://img.shields.io/badge/Strawberry_GraphQL-3776AB?style=for-the-badge&logo=graphql&logoColor=white)](https://github.com/strawberry-graphql/strawberry)
+[![Strawberry GraphQL](https://img.shields.io/badge/Strawberry_GraphQL-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://github.com/strawberry-graphql/strawberry)
 
 **( GUI )**
 
 [![Alpine.js](https://img.shields.io/badge/Alpine.js-8BC0D0?style=for-the-badge&logo=alpinedotjs&logoColor=white)](https://github.com/alpinejs/alpine)
 [![HTMX](https://img.shields.io/badge/HTMX-3366CC?style=for-the-badge&logo=htmx&logoColor=white)](https://github.com/bigskysoftware/htmx)
 [![Tailwind CSS](https://img.shields.io/badge/tailwind_css-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://github.com/tailwindlabs/tailwindcss)
+[![Jinja](https://img.shields.io/badge/Jinja-7E0C1B?style=for-the-badge&logo=jinja&logoColor=white)](https://github.com/pallets/jinja)
 
 **[ for Dependencies Details please see the end of this README ]**
 

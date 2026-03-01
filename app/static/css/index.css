@@ -1,0 +1,15 @@
+:root {
+    --app-font: "Prosto One", cursive;
+}
+
+html,
+body {
+    font-family: var(--app-font);
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
