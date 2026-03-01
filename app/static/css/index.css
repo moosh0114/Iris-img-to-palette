@@ -1,5 +1,10 @@
 :root {
     --app-font: "Prosto One", cursive;
+
+    --primary-color: #424242;
+    --primary-color-two: #9f9f9f;
+    --primary-color-three: #ababab;
+    --primary-color-four: #d3d3d3;
 }
 
 html,
@@ -12,4 +17,8 @@ input,
 select,
 textarea {
     font: inherit;
+}
+
+.iris-shadow-main {
+    box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, 0.2);
 }

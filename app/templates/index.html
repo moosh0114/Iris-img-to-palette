@@ -14,9 +14,19 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <style type="text/tailwindcss">
+      @utility btn-main {
+        @apply w-full lg:w-45 h-15 my-4 border border-[var(--primary-color-four)] hover:bg-gray-200 duration-600 rounded-xl cursor-pointer;
+      }
+
+      @utility btn-num-control {
+        @apply h-10 w-10 rounded-md bg-[var(--primary-color-two)] text-2xl text-white;
+      }
+    </style>
   </head>
   <body class="">
-    <div class="w-full p-4" x-data="uploader()">
+    <div class="w-full max-w-320 mx-auto xl:my-5 p-4" x-data="uploader()">
       <form
         id="extract-form"
         class="flex h-full flex-col gap-4"
@@ -41,7 +51,7 @@
         <input type="hidden" name="n_colors" x-model="nColors" />
 
         <div
-          class="relative min-h-120 max-h-120 flex items-center justify-center p-4 text-center rounded-2xl cursor-pointer bg-[#424242]"
+          class="relative min-h-120 max-h-120 flex items-center justify-center p-4 text-center rounded-2xl cursor-pointer bg-[var(--primary-color)]"
           :class="dropActive ? 'ring-2 ring-white/60' : ''"
           @click="$refs.fileInput.click()"
           @dragover.prevent="dropActive = true"
@@ -50,7 +60,7 @@
         >
           <template x-if="!previewUrl">
             <div class="h-full w-full flex items-center justify-center">
-              <p class="tracking-wide text-[#ababab]">Upload / Drag Image Here</p>
+              <p class="tracking-wide text-[var(--primary-color-three)]">Upload / Drag Image Here</p>
             </div>
           </template>
           <template x-if="previewUrl">
@@ -63,17 +73,17 @@
             <div class="flex flex-col lg:flex-row flex-wrap items-center justify-between gap-4">
               <button
                 type="button"
-                class="w-full lg:w-45 h-15 my-4 border border-[#D3D3D3] rounded-xl"
+                class="btn-main iris-shadow-main"
                 onclick="copyPaletteJson(this)"
               >
-                <span class="text-lg text-[#989898]">COPY JSON</span>
+                <span class="text-lg text-[var(--primary-color-two)]">COPY JSON</span>
               </button>
 
-              <div class="flex flex-col sm:flex-row items-center gap-4 uppercase tracking-wide text-[#9f9f9f]">
+              <div class="flex flex-col sm:flex-row items-center gap-4 uppercase tracking-wide text-[var(--primary-color-two)]">
                 <span class="text-2xl">Extract</span>
                 <button
                   type="button"
-                  class="h-10 w-10 rounded-md bg-[#424242] text-2xl text-[#a9a9a9]"
+                  class="btn-num-control"
                   @pointerdown.prevent="startAdjust(-1)"
                   @pointerup="stopAdjust()"
                   @pointerleave="stopAdjust()"
@@ -82,10 +92,10 @@
                 >
                   <span class="text-2xl"> - </span>
                 </button>
-                <span class="text-center text-2xl text-[#a9a9a9]" x-text="nColors"></span>
+                <span class="text-center text-2xl text-[var(--primary-color-three)]" x-text="nColors"></span>
                 <button
                   type="button"
-                  class="h-10 w-10 rounded-md bg-[#424242] text-2xl text-[#a9a9a9]"
+                  class="btn-num-control"
                   @pointerdown.prevent="startAdjust(1)"
                   @pointerup="stopAdjust()"
                   @pointerleave="stopAdjust()"
@@ -99,14 +109,14 @@
 
               <button
                 type="submit"
-                class="w-full lg:w-45 h-15 my-4 border border-[#D3D3D3] rounded-xl"
+                class="btn-main iris-shadow-main"
               >
-                <span class="text-2xl text-[#989898]">GO</span>
+                <span class="text-2xl text-[var(--primary-color-two)]">GO</span>
               </button>
 
               <div class="w-full grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
                 {% for _ in range(12) %}
-                  <div class="h-16 sm:h-22 rounded-xl bg-[#454545]"></div>
+                  <div class="h-16 sm:h-22 rounded-xl bg-[var(--primary-color)]"></div>
                 {% endfor %}
               </div>
             </div>
