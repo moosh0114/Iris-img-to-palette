@@ -87,10 +87,11 @@ async def load_result(db_path: Path, result_id: int) -> PaletteResult | None:
 async def clear_history_records(db_path: Path) -> None:
     paths = await run_in_threadpool(list_image_paths, db_path)
     await run_in_threadpool(clear_results, db_path)
+    upload_root = UPLOAD_DIR.resolve()
     for path in paths:
-        p = Path(path)
-        if p.exists():
-            p.unlink()
+        p = Path(path).resolve()
+        if upload_root in p.parents:
+            p.unlink(missing_ok=True)
 
 
 async def extract_batch_palettes(
