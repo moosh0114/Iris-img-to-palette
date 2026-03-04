@@ -9,17 +9,12 @@ from fastapi.concurrency import run_in_threadpool
 
 from scripts.extract_colors import extract_dominant_colors
 
+from .config import settings
 from .storage import PaletteResult, clear_results, get_result, list_image_paths, list_results, save_result
 
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-DATA_DIR = REPO_ROOT / "data"
-UPLOAD_DIR = DATA_DIR / "uploads"
-DB_PATH = DATA_DIR / "app.db"
-MAX_UPLOAD_BYTES = 10 * 1024 * 1024
-MAX_BATCH_IMAGES = 1000
-UPLOAD_CHUNK_SIZE = 1024 * 1024
 MAGIC_BYTES = {b"\xff\xd8\xff", b"\x89PNG\r\n\x1a\n", b"GIF8", b"RIFF", b"BM"}
+
 
 def clamp_n_colors(value: int) -> int:
     return max(1, min(12, int(value)))
@@ -76,7 +71,7 @@ def format_result_for_template(result: PaletteResult) -> dict[str, Any]:
     }
 
 
-async def load_history(db_path: Path, *, limit: int = 20) -> list[PaletteResult]:
+async def load_history(db_path: Path, *, limit: int = settings.history_limit) -> list[PaletteResult]:
     return await run_in_threadpool(list_results, db_path, limit=limit)
 
 
@@ -87,7 +82,7 @@ async def load_result(db_path: Path, result_id: int) -> PaletteResult | None:
 async def clear_history_records(db_path: Path) -> None:
     paths = await run_in_threadpool(list_image_paths, db_path)
     await run_in_threadpool(clear_results, db_path)
-    upload_root = UPLOAD_DIR.resolve()
+    upload_root = settings.upload_dir.resolve()
     for path in paths:
         p = Path(path).resolve()
         if upload_root in p.parents:
@@ -103,8 +98,8 @@ async def extract_batch_palettes(
 ) -> dict[str, Any]:
     if not uploads:
         raise ValueError("Please upload at least one image.")
-    if len(uploads) > MAX_BATCH_IMAGES:
-        raise ValueError(f"You can upload up to {MAX_BATCH_IMAGES} images at once.")
+    if len(uploads) > settings.max_batch_images:
+        raise ValueError(f"You can upload up to {settings.max_batch_images} images at once.")
 
     n = clamp_n_colors(n_colors)
     palettes_raw: list[list[dict[str, Any]]] = []
@@ -124,24 +119,24 @@ async def extract_batch_palettes(
         try:
             with temp_path.open("wb") as f:
                 while True:
-                    chunk = await upload.read(UPLOAD_CHUNK_SIZE)
+                    chunk = await upload.read(settings.upload_chunk_size)
                     if not chunk:
                         break
                     total_bytes += len(chunk)
-                    if total_bytes > MAX_UPLOAD_BYTES:
-                        raise ValueError(f"File '{original_name}' exceeds {MAX_UPLOAD_BYTES // (1024 * 1024)}MB.")
+                    if total_bytes > settings.max_upload_bytes:
+                        limit_mb = settings.max_upload_bytes // (1024 * 1024)
+                        raise ValueError(f"File '{original_name}' exceeds {limit_mb}MB.")
                     sha256.update(chunk)
                     f.write(chunk)
 
             if total_bytes == 0:
                 raise ValueError(f"File '{original_name}' is empty.")
 
-            
             with temp_path.open("rb") as f:
                 header = f.read(16)
             if not any(header.startswith(magic) for magic in MAGIC_BYTES):
                 raise ValueError(f"'{original_name}' is not a valid image.")
-                
+
             file_hash = sha256.hexdigest()
             final_path = upload_dir / f"{file_hash[:16]}_{safe_name}"
             temp_path.replace(final_path)

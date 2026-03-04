@@ -8,9 +8,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from .config import settings
 from .palette_service import (
-    DB_PATH,
-    UPLOAD_DIR,
     clamp_n_colors,
     clear_history_records,
     extract_batch_palettes,
@@ -26,13 +25,13 @@ templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent / "tem
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await run_in_threadpool(init_db, DB_PATH)
-    await run_in_threadpool(UPLOAD_DIR.mkdir, parents=True, exist_ok=True)
+    await run_in_threadpool(init_db, settings.db_path)
+    await run_in_threadpool(settings.upload_dir.mkdir, parents=True, exist_ok=True)
     yield
 
 
 app = FastAPI(title="Iris Img to Palette", lifespan=lifespan)
-app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR), check_dir=False), name="uploads")
+app.mount("/uploads", StaticFiles(directory=str(settings.upload_dir), check_dir=False), name="uploads")
 app.mount("/static", StaticFiles(directory=str(Path(__file__).resolve().parent / "static")), name="static")
 
 
@@ -54,7 +53,7 @@ def index(request: Request) -> HTMLResponse:
 
 @app.get("/history", response_class=HTMLResponse)
 async def history(request: Request) -> HTMLResponse:
-    history_rows = await load_history(DB_PATH, limit=20)
+    history_rows = await load_history(settings.db_path, limit=settings.history_limit)
     results = [format_result_for_template(item) for item in history_rows]
     return templates.TemplateResponse(
         "partials/history.html",
@@ -67,7 +66,7 @@ async def history(request: Request) -> HTMLResponse:
 
 @app.post("/api/history/clear", response_class=HTMLResponse)
 async def api_clear_history(request: Request) -> HTMLResponse:
-    await clear_history_records(DB_PATH)
+    await clear_history_records(settings.db_path)
     return templates.TemplateResponse(
         "partials/history.html",
         {
@@ -79,7 +78,7 @@ async def api_clear_history(request: Request) -> HTMLResponse:
 
 @app.get("/api/result/{result_id}", response_class=HTMLResponse)
 async def api_result(request: Request, result_id: int) -> HTMLResponse:
-    result = await load_result(DB_PATH, result_id)
+    result = await load_result(settings.db_path, result_id)
     if result is None:
         return HTMLResponse("<div class='panel'>Not found.</div>", status_code=404)
 
@@ -103,8 +102,8 @@ async def api_extract(
         result = await extract_batch_palettes(
             images,
             clamp_n_colors(int(n_colors)),
-            db_path=DB_PATH,
-            upload_dir=UPLOAD_DIR,
+            db_path=settings.db_path,
+            upload_dir=settings.upload_dir,
         )
         palettes = result.get("palettes") or []
         if palettes:
