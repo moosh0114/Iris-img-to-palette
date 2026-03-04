@@ -3,7 +3,6 @@ from html import escape
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, Request, UploadFile
-from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -25,8 +24,8 @@ templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent / "tem
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await run_in_threadpool(init_db, settings.db_path)
-    await run_in_threadpool(settings.upload_dir.mkdir, parents=True, exist_ok=True)
+    await init_db(settings.db_path)
+    settings.upload_dir.mkdir(parents=True, exist_ok=True)
     yield
 
 

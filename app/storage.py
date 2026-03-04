@@ -1,9 +1,10 @@
 import json
-import sqlite3
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+import aiosqlite
 
 
 @dataclass(frozen=True)
@@ -28,10 +29,10 @@ def _load_palette(value: Any) -> list[dict[str, Any]]:
     return []
 
 
-def init_db(db_path: Path) -> None:
+async def init_db(db_path: Path) -> None:
     db_path.parent.mkdir(parents=True, exist_ok=True)
-    with sqlite3.connect(db_path) as conn:
-        conn.execute(
+    async with aiosqlite.connect(db_path) as conn:
+        await conn.execute(
             """
             CREATE TABLE IF NOT EXISTS palette_results (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,11 +45,11 @@ def init_db(db_path: Path) -> None:
             )
             """
         )
-        conn.execute("CREATE INDEX IF NOT EXISTS idx_palette_results_created_at ON palette_results(created_at)")
-        conn.commit()
+        await conn.execute("CREATE INDEX IF NOT EXISTS idx_palette_results_created_at ON palette_results(created_at)")
+        await conn.commit()
 
 
-def save_result(
+async def save_result(
     *,
     db_path: Path,
     filename: str,
@@ -59,29 +60,30 @@ def save_result(
 ) -> int:
     created_at = datetime.now(timezone.utc).isoformat()
     palette_json = json.dumps(palette, ensure_ascii=False, separators=(",", ":"))
-    with sqlite3.connect(db_path) as conn:
-        cur = conn.execute(
+    async with aiosqlite.connect(db_path) as conn:
+        cur = await conn.execute(
             """
             INSERT INTO palette_results (filename, sha256, n_colors, palette_json, image_path, created_at)
             VALUES (?, ?, ?, ?, ?, ?)
             """,
             (filename, sha256, int(n_colors), palette_json, image_path, created_at),
         )
-        conn.commit()
+        await conn.commit()
         return int(cur.lastrowid)
 
 
-def get_result(db_path: Path, result_id: int) -> PaletteResult | None:
-    with sqlite3.connect(db_path) as conn:
-        conn.row_factory = sqlite3.Row
-        row = conn.execute(
+async def get_result(db_path: Path, result_id: int) -> PaletteResult | None:
+    async with aiosqlite.connect(db_path) as conn:
+        conn.row_factory = aiosqlite.Row
+        cur = await conn.execute(
             """
             SELECT id, filename, sha256, n_colors, palette_json, image_path, created_at
             FROM palette_results
             WHERE id = ?
             """,
             (int(result_id),),
-        ).fetchone()
+        )
+        row = await cur.fetchone()
 
     if row is None:
         return None
@@ -98,10 +100,10 @@ def get_result(db_path: Path, result_id: int) -> PaletteResult | None:
     )
 
 
-def list_results(db_path: Path, *, limit: int = 20) -> list[PaletteResult]:
-    with sqlite3.connect(db_path) as conn:
-        conn.row_factory = sqlite3.Row
-        rows = conn.execute(
+async def list_results(db_path: Path, *, limit: int = 20) -> list[PaletteResult]:
+    async with aiosqlite.connect(db_path) as conn:
+        conn.row_factory = aiosqlite.Row
+        cur = await conn.execute(
             """
             SELECT id, filename, sha256, n_colors, palette_json, image_path, created_at
             FROM palette_results
@@ -109,7 +111,8 @@ def list_results(db_path: Path, *, limit: int = 20) -> list[PaletteResult]:
             LIMIT ?
             """,
             (int(limit),),
-        ).fetchall()
+        )
+        rows = await cur.fetchall()
 
     out: list[PaletteResult] = []
     for row in rows:
@@ -127,14 +130,15 @@ def list_results(db_path: Path, *, limit: int = 20) -> list[PaletteResult]:
     return out
 
 
-def clear_results(db_path: Path) -> None:
-    with sqlite3.connect(db_path) as conn:
-        conn.execute("DELETE FROM palette_results")
-        conn.commit()
+async def clear_results(db_path: Path) -> None:
+    async with aiosqlite.connect(db_path) as conn:
+        await conn.execute("DELETE FROM palette_results")
+        await conn.commit()
 
 
-def list_image_paths(db_path: Path) -> list[str]:
-    with sqlite3.connect(db_path) as conn:
-        rows = conn.execute("SELECT image_path FROM palette_results").fetchall()
+async def list_image_paths(db_path: Path) -> list[str]:
+    async with aiosqlite.connect(db_path) as conn:
+        cur = await conn.execute("SELECT image_path FROM palette_results")
+        rows = await cur.fetchall()
     return [str(row[0]) for row in rows if row and row[0]]
 

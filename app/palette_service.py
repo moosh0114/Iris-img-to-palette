@@ -72,16 +72,16 @@ def format_result_for_template(result: PaletteResult) -> dict[str, Any]:
 
 
 async def load_history(db_path: Path, *, limit: int = settings.history_limit) -> list[PaletteResult]:
-    return await run_in_threadpool(list_results, db_path, limit=limit)
+    return await list_results(db_path, limit=limit)
 
 
 async def load_result(db_path: Path, result_id: int) -> PaletteResult | None:
-    return await run_in_threadpool(get_result, db_path, result_id)
+    return await get_result(db_path, result_id)
 
 
 async def clear_history_records(db_path: Path) -> None:
-    paths = await run_in_threadpool(list_image_paths, db_path)
-    await run_in_threadpool(clear_results, db_path)
+    paths = await list_image_paths(db_path)
+    await clear_results(db_path)
     upload_root = settings.upload_dir.resolve()
     for path in paths:
         p = Path(path).resolve()
@@ -143,8 +143,7 @@ async def extract_batch_palettes(
             palette = await run_in_threadpool(extract_dominant_colors, str(final_path), n)
             palettes_raw.append(palette)
 
-            await run_in_threadpool(
-                save_result,
+            await save_result(
                 db_path=db_path,
                 filename=original_name,
                 sha256=file_hash,
