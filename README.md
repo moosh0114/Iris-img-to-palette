@@ -2,71 +2,82 @@
 
 [![GitHub last commit](https://img.shields.io/github/last-commit/moosh0114/Iris-img-to-palette.svg)](https://github.com/moosh0114/Iris-img-to-palette)
 [![GitHub repo size](https://img.shields.io/github/repo-size/moosh0114/Iris-img-to-palette.svg)](https://github.com/moosh0114/Iris-img-to-palette)
+[![Lyra](https://img.shields.io/badge/Designed_with-Lyra-FFC6EC?logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjEzMDAiIHZpZXdCb3g9IjAgMCA4MDAgMTMwMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iNzUiIHk9Ijc1IiB3aWR0aD0iNjUwIiBoZWlnaHQ9IjExNTAiIHN0cm9rZT0idXJsKCNwYWludDBfbGluZWFyXzIxNjVfNykiIHN0cm9rZS13aWR0aD0iMTUwIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MF9saW5lYXJfMjE2NV83IiB4MT0iNDAwIiB5MT0iMCIgeDI9IjQwMCIgeTI9IjEzMDAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agc3RvcC1jb2xvcj0iI0JCRkZFRCIvPgo8c3RvcCBvZmZzZXQ9IjAuNjk3MTE1IiBzdG9wLWNvbG9yPSIjRkZFQ0Y0Ii8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPC9zdmc+)](https://github.com/zzztzzzt/Lyra-AI)
 
+<br>
 <img src="https://github.com/moosh0114/Iris-img-to-palette/blob/main/logo/logo.png" alt="Iris-Color-Processor" style="height: 280px; width: auto;" />
 
-### Image Color Extraction to OKLCH Palette
+### Refinement Network for Image Color-Extraction
 
-IMPORTANT: This project is in development/testing. Do not use commercially for now.
+IMPORTANT : This project is still in the development and testing stages, licensing terms may be updated in the future. Please don't do any commercial usage currently.
 
-## Dependencies
+## Project Dependencies Guide
 
-Backend:
-- FastAPI
-- OpenCV
-- scikit-learn
-- NumPy
-- Jinja2
+[![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)](https://github.com/opencv/opencv)
+[![scikit-learn](https://img.shields.io/badge/scikit_learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)](https://github.com/scikit-learn/scikit-learn)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://github.com/fastapi/fastapi)
 
-GUI:
-- Alpine.js
-- HTMX
-- Tailwind CSS (browser build)
+**( GUI )**
 
-## Quickstart (GUI)
+[![Alpine.js](https://img.shields.io/badge/Alpine.js-8BC0D0?style=for-the-badge&logo=alpinedotjs&logoColor=white)](https://github.com/alpinejs/alpine)
+[![HTMX](https://img.shields.io/badge/HTMX-3366CC?style=for-the-badge&logo=htmx&logoColor=white)](https://github.com/bigskysoftware/htmx)
+[![Tailwind CSS](https://img.shields.io/badge/tailwind_css-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://github.com/tailwindlabs/tailwindcss)
+
+**[ for Dependencies Details please see the end of this README ]**
+
+Iris uses FastAPI for backend APIs and GUI integration, and uses scikit-learn & OpenCV for image color extraction, leverages K-Means clustering, and outputs results in the OKLCH color space to ensure perceptual uniformity and high-fidelity color analysis. FastAPI is MIT licensed, scikit-learn is licensed under the BSD 3-Clause License, OpenCV is licensed under the Apache-2.0 License.
+
+Iris uses uv for dependency and environment management. uv has multiple licenses.
+
+Iris uses Alpine.js, HTMX & Tailwind CSS for GUI showing. Alpine.js & Tailwind CSS licensed under the MIT License. HTMX licensed under Zero-Clause BSD License.
+
+## Quickstart ( GUI )
+
+**Build Dependencies ( Install uv )**
+
+upgrade : `python -m pip install --upgrade pip`
+
+use uv : `python -m pip install uv` & `python -m uv sync`
 
 ```shell
-python -m pip install --upgrade pip
-python -m pip install uv
-python -m uv sync
 python -m uv run uvicorn app.main:app --reload
 ```
 
 Open `http://127.0.0.1:8000`
 
-- DB: `data/app.db`
-- Uploads: `data/uploads/`
+**DB** : `data/app.db`
+**Uploads** : `data/uploads/`
 
-## API Notes
+`POST /api/extract` batch limit : `1000` images (frontend + backend)
 
-Current implementation uses REST endpoints for the web UI:
-- `POST /api/extract`
-- `GET /api/result/{result_id}`
-- `GET /history`
-- `POST /api/history/clear`
+`n_colors` range : `1..12`
 
-Runtime constraints and controls:
-- `POST /api/extract` batch limit: up to **1000 images** per run (enforced on both frontend and backend).
-- `n_colors` range: **1..12**.
-- Keyboard shortcuts:
-  - `ArrowUp` / `ArrowDown`: increase/decrease `n_colors`
-  - `Enter`: submit (`GO`)
-  - `ArrowLeft` / `ArrowRight`: switch preview image
+Keyboard : `ArrowUp/ArrowDown` adjust `n_colors`, `Enter` submit, `ArrowLeft/ArrowRight` switch preview image.
 
-## Run Script (CLI)
+## Run Script ( CLI )
 
 ```shell
 uv run python -m scripts.extract_colors
 ```
 
-Note: the script entry currently reads `test.jpg` in repo root when run directly.
+## Project Dependencies Details
 
-## Licenses
+FastAPI License : [https://github.com/fastapi/fastapi/blob/master/LICENSE](https://github.com/fastapi/fastapi/blob/master/LICENSE)
+<br>
 
-- FastAPI: https://github.com/fastapi/fastapi/blob/master/LICENSE
-- scikit-learn: https://github.com/scikit-learn/scikit-learn?tab=BSD-3-Clause-1-ov-file#readme
-- OpenCV: https://github.com/opencv/opencv/blob/4.x/LICENSE
-- uv: https://github.com/astral-sh/uv/blob/main/LICENSE-MIT and https://github.com/astral-sh/uv/blob/main/LICENSE-APACHE
-- Alpine.js: https://github.com/alpinejs/alpine/blob/main/LICENSE.md
-- HTMX: https://github.com/bigskysoftware/htmx/blob/master/LICENSE
-- Tailwind CSS: https://github.com/tailwindlabs/tailwindcss/blob/main/LICENSE
+scikit-learn License : [https://github.com/scikit-learn/scikit-learn?tab=BSD-3-Clause-1-ov-file#readme](https://github.com/scikit-learn/scikit-learn?tab=BSD-3-Clause-1-ov-file#readme)
+<br>
+
+OpenCV License : [https://github.com/opencv/opencv/blob/4.x/LICENSE](https://github.com/opencv/opencv/blob/4.x/LICENSE)
+<br>
+
+uv License : [https://github.com/astral-sh/uv/blob/main/LICENSE-MIT](https://github.com/astral-sh/uv/blob/main/LICENSE-MIT) & another Apache-2.0 [License](https://github.com/astral-sh/uv/blob/main/LICENSE-APACHE)
+<br>
+
+Alpine.js License : [https://github.com/alpinejs/alpine/blob/main/LICENSE.md](https://github.com/alpinejs/alpine/blob/main/LICENSE.md)
+<br>
+
+HTMX License : [https://github.com/bigskysoftware/htmx/blob/master/LICENSE](https://github.com/bigskysoftware/htmx/blob/master/LICENSE)
+<br>
+
+Tailwind CSS License : [https://github.com/tailwindlabs/tailwindcss/blob/main/LICENSE](https://github.com/tailwindlabs/tailwindcss/blob/main/LICENSE)
