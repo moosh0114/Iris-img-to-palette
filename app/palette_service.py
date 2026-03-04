@@ -19,7 +19,7 @@ DB_PATH = DATA_DIR / "app.db"
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
 MAX_BATCH_IMAGES = 1000
 UPLOAD_CHUNK_SIZE = 1024 * 1024
-
+MAGIC_BYTES = {b"\xff\xd8\xff", b"\x89PNG\r\n\x1a\n", b"GIF8", b"RIFF", b"BM"}
 
 def clamp_n_colors(value: int) -> int:
     return max(1, min(12, int(value)))
@@ -135,6 +135,12 @@ async def extract_batch_palettes(
             if total_bytes == 0:
                 raise ValueError(f"File '{original_name}' is empty.")
 
+            
+            with temp_path.open("rb") as f:
+                header = f.read(16)
+            if not any(header.startswith(magic) for magic in MAGIC_BYTES):
+                raise ValueError(f"'{original_name}' is not a valid image.")
+                
             file_hash = sha256.hexdigest()
             final_path = upload_dir / f"{file_hash[:16]}_{safe_name}"
             temp_path.replace(final_path)
