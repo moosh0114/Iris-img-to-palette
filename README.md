@@ -23,6 +23,7 @@ IMPORTANT : This project is still in the development and testing stages, licensi
 [![Alpine.js](https://img.shields.io/badge/Alpine.js-8BC0D0?style=for-the-badge&logo=alpinedotjs&logoColor=white)](https://github.com/alpinejs/alpine)
 [![HTMX](https://img.shields.io/badge/HTMX-3366CC?style=for-the-badge&logo=htmx&logoColor=white)](https://github.com/bigskysoftware/htmx)
 [![Tailwind CSS](https://img.shields.io/badge/tailwind_css-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://github.com/tailwindlabs/tailwindcss)
+[![Jinja](https://img.shields.io/badge/Jinja-7E0C1B?style=for-the-badge&logo=jinja&logoColor=white)](https://github.com/pallets/jinja)
 
 **[ for Dependencies Details please see the end of this README ]**
 
