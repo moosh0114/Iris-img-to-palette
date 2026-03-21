@@ -1,54 +1,110 @@
+/**
+ * @fileoverview Main Application & Alpine.js Component
+ * Handles the core uploader state, file parsing, keyboard shortcuts, 
+ * and HTMX lifecycle interactions.
+ */
+
 let lastPointerClientX = -1;
 let lastPointerClientY = -1;
 
+/**
+ * Initialize the core uploader component of Alpine.js
+ * Responsible for managing image preview, color extraction quantity, upload status, and receiving keyboard and screen event operations.
+ * @returns {Object} Alpine.js data object
+ */
 function uploader() {
     return {
-        // --- Theme ---
         isDark: getStoredTheme() === "dark",
+        // whether the theme is in transition
         themeTransitioning: false,
 
-        // --- Preview / Upload ---
+
+        // The currently displayed image preview URL
         previewUrl: "",
+        // All image preview URLs
         previewUrls: [],
+        // Loaded image files
         files: [],
+        // Total number of files
         totalFiles: 0,
+        // Current image index
         currentIndex: 0,
+        // Whether the preview image is animating
         previewAnimating: false,
+        // The CSS class corresponding to the sliding direction of the preview image
         previewSlideClass: "",
+        // Whether the drag-and-drop upload area is active
         dropActive: false,
+        // Whether the preview image is being dragged
         previewDragging: false,
+        // The starting X coordinate of the drag
         previewDragStartX: 0,
+        // The X-axis displacement during the drag
         previewDragDeltaX: 0,
+
+
+        // Navigation button long press mechanism
         navHoldDelayTimer: null,
         navHoldRepeatTimer: null,
         lastNavTapAt: 0,
         lastNavDirection: 0,
 
-        // --- Palette ---
+
+        // Palette State
+
+        // Target number of colors to extract, used as a string bound to the input box
         nColors: "10",
+        // Stores the extracted palette data for each image
         extractedPalettes: [],
         paletteRenderTimer: null,
         navPaletteRenderTimer: null,
         holdDelayTimer: null,
         holdRepeatTimer: null,
+
+
+        // Number of color swatches before submission (for HTMX replacement animation)
         preSubmitDesktopCount: 0,
+        // Number of color swatches before submission (for HTMX replacement animation)
         preSubmitMobileCount: 0,
 
-        // --- Keyboard ---
+
+        // Keyboard State
         keyboardHoldDirection: 0,
         keyboardHoldDelayTimer: null,
         keyboardHoldRepeatTimer: null,
         lastKeyTapAt: 0,
 
-        // --- Misc UI ---
+
+        // Misc UI State
+
+        // Whether the backend extraction process is in progress
         isWorking: false,
+        // Whether the export panel is displayed
         showExport: false,
+
+
+        // Theme Methods
+
+        // Toggle dark/light theme
+        toggleTheme() {
+            if (this.themeTransitioning) return;
+            this.themeTransitioning = true;
+            this.isDark = !this.isDark;
+            applyTheme(this.isDark ? "dark" : "light");
+            window.setTimeout(() => {
+                this.themeTransitioning = false;
+            }, 700);
+        },
+
+
+        // File & Upload Handling
 
         onUploadAreaClick(e) {
             const target = e?.target;
             if (target?.closest(".iris-nav-btn")) return;
             this.$refs.fileInput.click();
         },
+
         clearLoadedFiles() {
             this.revokePreviews();
             this.files = [];
@@ -72,70 +128,8 @@ function uploader() {
             resetUploadAreaBackground();
             this.renderCurrentPalette(true);
         },
-        toggleTheme() {
-            if (this.themeTransitioning) return;
-            this.themeTransitioning = true;
-            this.isDark = !this.isDark;
-            applyTheme(this.isDark ? "dark" : "light");
-            window.setTimeout(() => {
-                this.themeTransitioning = false;
-            }, 700);
-        },
-        previewAt(offset) {
-            if (!this.totalFiles || !this.previewUrls.length) return "";
-            const idx = this.currentIndex + offset;
-            if (idx < 0 || idx >= this.totalFiles) return "";
-            return this.previewUrls[idx];
-        },
-        sanitizeNColors() {
-            const digits = String(this.nColors ?? "").replace(/[^\d]/g, "");
-            let value = parseInt(digits || "10", 10);
-            if (Number.isNaN(value)) value = 10;
-            this.nColors = String(Math.min(12, Math.max(1, value)));
-        },
-        stepNColors(delta) {
-            const current = parseInt(this.nColors, 10);
-            const base = Number.isNaN(current) ? 10 : current;
-            this.nColors = String(Math.min(12, Math.max(1, base + delta)));
-            this.schedulePaletteRender();
-        },
-        startAdjust(delta) {
-            this.stopAdjust();
-            this.stepNColors(delta);
-            this.holdDelayTimer = window.setTimeout(() => {
-                this.holdRepeatTimer = window.setInterval(() => this.stepNColors(delta), 90);
-            }, 500);
-        },
-        stopAdjust() {
-            if (this.holdDelayTimer) window.clearTimeout(this.holdDelayTimer);
-            if (this.holdRepeatTimer) window.clearInterval(this.holdRepeatTimer);
-            this.holdDelayTimer = null;
-            this.holdRepeatTimer = null;
-        },
-        revokePreviews() {
-            this.previewUrls.forEach((url) => URL.revokeObjectURL(url));
-            this.previewUrls = [];
-        },
-        setPreviewIndex(nextIndex) {
-            if (!this.totalFiles) return;
-            const prevIndex = this.currentIndex;
-            const clamped = Math.max(0, Math.min(this.totalFiles - 1, nextIndex));
-            if (clamped === this.currentIndex) return false;
-            this.currentIndex = clamped;
-            this.previewUrl = this.previewUrls[clamped] || "";
-            this.previewSlideClass = clamped > prevIndex ? "iris-slide-in-right" : "iris-slide-in-left";
-            this.previewAnimating = true;
-            window.setTimeout(() => {
-                this.previewAnimating = false;
-                this.previewSlideClass = "";
-            }, 260);
-            this.scheduleNavPaletteRender();
-            return true;
-        },
-        shiftPreview(step) {
-            if (!this.totalFiles) return;
-            return this.setPreviewIndex(this.currentIndex + step);
-        },
+
+        // Configure the file and generate a preview ( this will overwrite any existing files )
         setFiles(filesLike) {
             const files = Array.from(filesLike || []).filter((file) => file && file.type.startsWith("image/"));
             if (!files.length) return;
@@ -165,20 +159,8 @@ function uploader() {
             resetUploadAreaBackground();
             this.renderCurrentPalette(true);
         },
-        scheduleNavPaletteRender() {
-            if (this.navPaletteRenderTimer) window.clearTimeout(this.navPaletteRenderTimer);
-            this.navPaletteRenderTimer = window.setTimeout(() => {
-                this.navPaletteRenderTimer = null;
-                this.renderCurrentPalette();
-            }, 180);
-        },
-        flushNavPaletteRender() {
-            if (this.navPaletteRenderTimer) {
-                window.clearTimeout(this.navPaletteRenderTimer);
-                this.navPaletteRenderTimer = null;
-            }
-            this.renderCurrentPalette();
-        },
+
+        // Triggered after selecting a file through the file selector
         onPick(e) {
             const files = e?.target?.files;
             if (!files?.length) {
@@ -191,30 +173,57 @@ function uploader() {
             }
             this.setFiles(files);
         },
+
+        // Triggered when a file is dropped after dragging
         onDrop(e) {
             this.dropActive = false;
             const files = e?.dataTransfer?.files;
             if (!files?.length) return;
             this.setFiles(files);
         },
-        schedulePaletteRender() {
-            if (this.paletteRenderTimer) window.clearTimeout(this.paletteRenderTimer);
-            this.paletteRenderTimer = window.setTimeout(() => this.renderCurrentPalette(), 120);
+
+
+        // Preview Navigation
+
+        // Release all Object URLs generated by the preview images to avoid memory leaks
+        revokePreviews() {
+            this.previewUrls.forEach((url) => URL.revokeObjectURL(url));
+            this.previewUrls = [];
         },
-        renderCurrentPalette(commit = false, options = {}) {
-            const n = Math.max(1, parseInt(this.nColors, 10) || 10);
-            const palette = this.extractedPalettes?.[this.currentIndex] || [];
-            const desktop = document.getElementById("desktop-swatches");
-            const mobile = document.getElementById("mobile-swatches");
-            const keepDesktop = Math.max(0, Number(options.keepDesktop || 0));
-            const keepMobile = Math.max(0, Number(options.keepMobile || 0));
-            const paletteCount = Array.isArray(palette) ? palette.length : 0;
-            const previewLayoutCount = Math.max(n, paletteCount);
-            updateSwatchGridLayout(desktop, commit ? n : previewLayoutCount);
-            renderPaletteGrid(desktop, palette, n, { commit, keepAtLeast: keepDesktop });
-            renderPaletteGrid(mobile, palette, n, { commit, keepAtLeast: keepMobile });
-            applyPaletteBackgroundToUploadArea(document);
+
+        // Get the preview URL relative to the current index
+        previewAt(offset) {
+            if (!this.totalFiles || !this.previewUrls.length) return "";
+            const idx = this.currentIndex + offset;
+            if (idx < 0 || idx >= this.totalFiles) return "";
+            return this.previewUrls[idx];
         },
+
+        // Switch the specified preview index with transition animation
+        setPreviewIndex(nextIndex) {
+            if (!this.totalFiles) return;
+            const prevIndex = this.currentIndex;
+            const clamped = Math.max(0, Math.min(this.totalFiles - 1, nextIndex));
+            if (clamped === this.currentIndex) return false;
+            this.currentIndex = clamped;
+            this.previewUrl = this.previewUrls[clamped] || "";
+            this.previewSlideClass = clamped > prevIndex ? "iris-slide-in-right" : "iris-slide-in-left";
+            this.previewAnimating = true;
+            window.setTimeout(() => {
+                this.previewAnimating = false;
+                this.previewSlideClass = "";
+            }, 260);
+            this.scheduleNavPaletteRender();
+            return true;
+        },
+
+        // Switch the specified preview index with transition animation
+        shiftPreview(step) {
+            if (!this.totalFiles) return;
+            return this.setPreviewIndex(this.currentIndex + step);
+        },
+
+        // Mouse drag logic for preview images
         startPreviewDrag(e) {
             if (!this.totalFiles) return;
             this.previewDragging = true;
@@ -233,6 +242,10 @@ function uploader() {
             }
             this.previewDragDeltaX = 0;
         },
+
+        // Button Hold / Long Press Mechanism
+
+        // Start button long press switching logic
         startNavHold(direction) {
             this.stopNavHold(true);
             const now = Date.now();
@@ -248,6 +261,8 @@ function uploader() {
                 }, turbo ? 20 : 100);
             }, 260);
         },
+
+        // End button long press
         stopNavHold(suppressFlush = false) {
             if (this.navHoldDelayTimer) window.clearTimeout(this.navHoldDelayTimer);
             if (this.navHoldRepeatTimer) window.clearInterval(this.navHoldRepeatTimer);
@@ -255,6 +270,8 @@ function uploader() {
             this.navHoldRepeatTimer = null;
             if (!suppressFlush) this.flushNavPaletteRender();
         },
+
+        // Keyboard long press switching logic
         onKeyboardDown(direction) {
             if (!this.totalFiles) return;
             if (this.keyboardHoldDirection === direction) return;
@@ -275,6 +292,8 @@ function uploader() {
                 }, turbo ? 20 : 100);
             }, 260);
         },
+
+        // End keyboard long press
         onKeyboardUp(suppressFlush = false) {
             this.keyboardHoldDirection = 0;
             if (this.keyboardHoldDelayTimer) window.clearTimeout(this.keyboardHoldDelayTimer);
@@ -283,162 +302,94 @@ function uploader() {
             this.keyboardHoldRepeatTimer = null;
             if (!suppressFlush) this.flushNavPaletteRender();
         },
+
+        // Palette Rendering & nColors Control
+
+        // Ensure the target number input value is within 1~12
+        sanitizeNColors() {
+            const digits = String(this.nColors ?? "").replace(/[^\d]/g, "");
+            let value = parseInt(digits || "10", 10);
+            if (Number.isNaN(value)) value = 10;
+            this.nColors = String(Math.min(12, Math.max(1, value)));
+        },
+
+        // Increase/decrease the current nColors and reschedule rendering
+        stepNColors(delta) {
+            const current = parseInt(this.nColors, 10);
+            const base = Number.isNaN(current) ? 10 : current;
+            this.nColors = String(Math.min(12, Math.max(1, base + delta)));
+            this.schedulePaletteRender();
+        },
+
+        // Start button long press switching logic
+        startAdjust(delta) {
+            this.stopAdjust();
+            this.stepNColors(delta);
+            this.holdDelayTimer = window.setTimeout(() => {
+                this.holdRepeatTimer = window.setInterval(() => this.stepNColors(delta), 90);
+            }, 500);
+        },
+
+        // End button long press
+        stopAdjust() {
+            if (this.holdDelayTimer) window.clearTimeout(this.holdDelayTimer);
+            if (this.holdRepeatTimer) window.clearInterval(this.holdRepeatTimer);
+            this.holdDelayTimer = null;
+            this.holdRepeatTimer = null;
+        },
+
+        // Delay rendering to reduce rendering load
+        scheduleNavPaletteRender() {
+            if (this.navPaletteRenderTimer) window.clearTimeout(this.navPaletteRenderTimer);
+            this.navPaletteRenderTimer = window.setTimeout(() => {
+                this.navPaletteRenderTimer = null;
+                this.renderCurrentPalette();
+            }, 180);
+        },
+        flushNavPaletteRender() {
+            if (this.navPaletteRenderTimer) {
+                window.clearTimeout(this.navPaletteRenderTimer);
+                this.navPaletteRenderTimer = null;
+            }
+            this.renderCurrentPalette();
+        },
+        schedulePaletteRender() {
+            if (this.paletteRenderTimer) window.clearTimeout(this.paletteRenderTimer);
+            this.paletteRenderTimer = window.setTimeout(() => this.renderCurrentPalette(), 120);
+        },
+
+        // Execute the rendering of the color corresponding to the current index
+        renderCurrentPalette(commit = false, options = {}) {
+            const n = Math.max(1, parseInt(this.nColors, 10) || 10);
+            const palette = this.extractedPalettes?.[this.currentIndex] || [];
+            const desktop = document.getElementById("desktop-swatches");
+            const mobile = document.getElementById("mobile-swatches");
+            const keepDesktop = Math.max(0, Number(options.keepDesktop || 0));
+            const keepMobile = Math.max(0, Number(options.keepMobile || 0));
+            const paletteCount = Array.isArray(palette) ? palette.length : 0;
+            const previewLayoutCount = Math.max(n, paletteCount);
+
+            updateSwatchGridLayout(desktop, commit ? n : previewLayoutCount);
+            renderPaletteGrid(desktop, palette, n, { commit, keepAtLeast: keepDesktop });
+            renderPaletteGrid(mobile, palette, n, { commit, keepAtLeast: keepMobile });
+            applyPaletteBackgroundToUploadArea(document);
+        },
     };
 }
 
-function copyPaletteJson(button) {
-    if (isTouchDevice()) {
-        const dock = button?.closest(".iris-export-dock");
-        if (dock && !dock.classList.contains("open")) {
-            dock.classList.add("open");
-            return;
-        }
-    }
-    const node = document.getElementById("palette-json");
-    if (!node) return;
-    navigator.clipboard.writeText(node.innerText || node.textContent || "");
-    if (!button) return;
-    const originalHtml = button.innerHTML;
-    const originalClass = button.className;
-    const label = button.querySelector("span");
-    if (label) {
-        label.textContent = "COPIED";
-    } else {
-        button.textContent = "COPIED";
-    }
-    button.classList.add("opacity-50");
-    button.disabled = true;
-    window.setTimeout(() => {
-        button.innerHTML = originalHtml;
-        button.className = originalClass;
-        button.disabled = false;
-    }, 900);
-    closeAllExportDock();
-}
+// Global Event Listeners & Bootstrapping
 
-function shortUniqueId() {
-    const t = Date.now().toString(36);
-    const p = Math.floor(performance.now()).toString(36);
-    const r = Math.floor(Math.random() * 1679616).toString(36);
-    return `${t}${p}${r}`;
-}
-
-function exportPaletteTxt(button) {
-    const jsonNode = document.getElementById("palette-json");
-    if (!jsonNode) return;
-    const content = jsonNode.innerText || jsonNode.textContent || "";
-    const uploaderData = getUploaderData();
-    const count = uploaderData?.extractedPalettes?.length || uploaderData?.totalFiles || 1;
-    const filename = `Iris_OKLCH_${count}_${shortUniqueId()}.txt`;
-    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-
-    if (button) {
-        button.classList.add("opacity-50");
-        window.setTimeout(() => button.classList.remove("opacity-50"), 500);
-    }
-    closeAllExportDock();
-}
-
-function toggleExportDock(triggerButton) {
-    const dock = triggerButton?.closest(".iris-export-dock");
-    if (!dock) return;
-    dock.classList.toggle("open");
-}
-
-function closeAllExportDock() {
-    document.querySelectorAll(".iris-export-dock.open").forEach((dock) => dock.classList.remove("open"));
-}
-
-function initExportDockHover(root = document) {
-    const docks = root.querySelectorAll(".iris-export-dock");
-    docks.forEach((dock) => {
-        if (dock.dataset.hoverBound === "1") return;
-        dock.dataset.hoverBound = "1";
-        dock.addEventListener("mouseenter", () => {
-            if (isTouchDevice()) return;
-            dock.classList.add("open");
-        });
-        dock.addEventListener("mouseleave", (event) => {
-            if (isTouchDevice()) return;
-            const next = event.relatedTarget;
-            if (next && dock.contains(next)) return;
-            dock.classList.remove("open");
-        });
-    });
-}
-
-function keepDockOpenIfPointerInside(root = document) {
-    if (lastPointerClientX < 0 || lastPointerClientY < 0) return;
-    const docks = root.querySelectorAll(".iris-export-dock");
-    docks.forEach((dock) => {
-        const rect = dock.getBoundingClientRect();
-        const inside = lastPointerClientX >= rect.left
-            && lastPointerClientX <= rect.right
-            && lastPointerClientY >= rect.top
-            && lastPointerClientY <= rect.bottom;
-        if (inside) dock.classList.add("open");
-    });
-}
-
-function toggleMobileSheet() {
-    const sheet = document.getElementById("mobile-sheet");
-    if (!sheet) return;
-    setMobileSheetOpen(sheet, !sheet.classList.contains("open"));
-}
-
-function setMobileSheetOpen(sheet, shouldOpen) {
-    if (!sheet) return;
-    sheet.classList.remove("anim-open", "anim-close");
-    if (shouldOpen) {
-        sheet.classList.add("open", "anim-open");
-    } else {
-        sheet.classList.add("anim-close");
-        window.setTimeout(() => {
-            sheet.classList.remove("open");
-            sheet.classList.remove("anim-close");
-        }, 260);
-    }
-}
-
-function initMobileSheetGesture() {
-    const sheet = document.getElementById("mobile-sheet");
-    if (!sheet) return;
-    let startY = 0;
-    let active = false;
-
-    sheet.addEventListener("touchstart", (e) => {
-        if (!e.touches?.length) return;
-        active = true;
-        startY = e.touches[0].clientY;
-    }, { passive: true });
-
-    sheet.addEventListener("touchend", (e) => {
-        if (!active || !e.changedTouches?.length) return;
-        const delta = e.changedTouches[0].clientY - startY;
-        if (delta < -24) {
-            setMobileSheetOpen(sheet, true);
-        } else if (delta > 24) {
-            setMobileSheetOpen(sheet, false);
-        }
-        active = false;
-    }, { passive: true });
-}
-
+// Apply swatch text contrast correction
 document.addEventListener("DOMContentLoaded", () => applySwatchTextContrast());
+
 document.addEventListener("DOMContentLoaded", () => {
     applyTheme(getStoredTheme());
     const alpineData = getUploaderData();
     if (alpineData) alpineData.schedulePaletteRender();
     initExportDockHover(document);
 });
+
+// After HTMX is successful, change the result content below
 document.body.addEventListener("htmx:afterSwap", (event) => {
     if (event?.target?.id === "result") {
         const alpineData = getUploaderData();
@@ -462,6 +413,7 @@ document.body.addEventListener("htmx:afterSwap", (event) => {
             alpineData.extractedPalettes = palettes;
             requestAnimationFrame(() => {
                 alpineData.renderCurrentPalette(true, { keepDesktop, keepMobile });
+                // Reset the animation length preserved before submission
                 alpineData.preSubmitDesktopCount = 0;
                 alpineData.preSubmitMobileCount = 0;
             });
@@ -472,6 +424,8 @@ document.body.addEventListener("htmx:afterSwap", (event) => {
         keepDockOpenIfPointerInside(event.target);
     }
 });
+
+// HTMX Preparation : Pre-requisite checks and animation start point settings
 document.body.addEventListener("htmx:beforeRequest", (event) => {
     if (event?.detail?.requestConfig?.path !== "/api/extract") return;
     const alpineData = getUploaderData();
@@ -480,17 +434,21 @@ document.body.addEventListener("htmx:beforeRequest", (event) => {
         const inputCount = inputEl?.files?.length || 0;
         const memoryCount = alpineData.files?.length || 0;
 
+        // The file recorded via drag and drop will be resynchronized to input type=file so that the form can be packaged
         if (inputEl && inputCount === 0 && memoryCount > 0) {
             const dt = new DataTransfer();
             alpineData.files.forEach((file) => dt.items.add(file));
             inputEl.files = dt.files;
         }
 
+        // Block submission when no image is selected
         if ((inputEl?.files?.length || 0) === 0) {
             event.preventDefault();
             alpineData.$refs?.fileInput?.click?.();
             return;
         }
+
+        // Limit the maximum number of files
         if ((inputEl?.files?.length || 0) > MAX_FILES_PER_BATCH) {
             event.preventDefault();
             showTransientNotice(`Limit is ${MAX_FILES_PER_BATCH} images per run.`);
@@ -498,16 +456,22 @@ document.body.addEventListener("htmx:beforeRequest", (event) => {
             alpineData.setFiles(accepted);
             return;
         }
+
+        // Record the length of the current color blocks on the screen as the basis for maintaining smooth non-flickering of the staggered animation after HTMX replacement
         alpineData.preSubmitDesktopCount = document.getElementById("desktop-swatches")?.children?.length || 0;
         alpineData.preSubmitMobileCount = document.getElementById("mobile-swatches")?.children?.length || 0;
         alpineData.isWorking = true;
     }
 });
+
+// Remove loading status
 document.body.addEventListener("htmx:afterRequest", (event) => {
     if (event?.detail?.requestConfig?.path !== "/api/extract") return;
     const alpineData = getUploaderData();
     if (alpineData) alpineData.isWorking = false;
 });
+
+// Handle abnormal status not stuck in loading
 ["htmx:responseError", "htmx:sendError", "htmx:timeout"].forEach((evt) => {
     document.body.addEventListener(evt, (event) => {
         if (event?.detail?.requestConfig?.path !== "/api/extract") return;
@@ -515,10 +479,13 @@ document.body.addEventListener("htmx:afterRequest", (event) => {
         if (alpineData) alpineData.isWorking = false;
     });
 });
+
+// Enable the keyboard Enter key to directly submit the form, and use the arrow keys to control all preview switching and color palette number increases and decreases
 document.addEventListener("keydown", (event) => {
     const alpineData = getUploaderData();
     if (!alpineData) return;
     const activeTag = String(document.activeElement?.tagName || "").toLowerCase();
+
     if (activeTag === "textarea") return;
     if (event.key === "Enter" && activeTag !== "input") {
         event.preventDefault();
@@ -529,6 +496,7 @@ document.addEventListener("keydown", (event) => {
         return;
     }
     if (activeTag === "input") return;
+
     if (event.key === "ArrowLeft") {
         event.preventDefault();
         alpineData.onKeyboardDown(-1);
@@ -543,6 +511,7 @@ document.addEventListener("keydown", (event) => {
         alpineData.stepNColors(-1);
     }
 });
+
 document.addEventListener("keyup", (event) => {
     const alpineData = getUploaderData();
     if (!alpineData) return;
@@ -550,15 +519,21 @@ document.addEventListener("keyup", (event) => {
         alpineData.onKeyboardUp();
     }
 });
+
+// Register mobile swipe gesture
 document.addEventListener("DOMContentLoaded", () => {
     initMobileSheetGesture();
 });
+
+// Global click detection (for closing Popup Dock on mobile devices)
 document.addEventListener("click", (event) => {
     if (!isTouchDevice()) return;
     const target = event.target;
     if (target?.closest(".iris-export-dock")) return;
     closeAllExportDock();
 });
+
+// Always record the global pointer position for keepDockOpenIfPointerInside to check
 document.addEventListener("pointermove", (event) => {
     lastPointerClientX = event.clientX;
     lastPointerClientY = event.clientY;

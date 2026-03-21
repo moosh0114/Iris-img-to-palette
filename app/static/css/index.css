@@ -15,6 +15,7 @@
     --swatch-right-bg: #f7f7f7;
     --swatch-split-right: #ffffff;
     --extract-color: #555555;
+    --text-right: rgba(0, 0, 0, 0.75);
 }
 
 html,
@@ -136,11 +137,11 @@ textarea {
     pointer-events: auto;
 }
 
-.iris-export-dock.open > button:first-child {
+.iris-export-dock.open>button:first-child {
     transform: translateY(4px);
 }
 
-.iris-export-dock > button:first-child {
+.iris-export-dock>button:first-child {
     transition: transform 220ms ease;
 }
 
@@ -250,6 +251,7 @@ textarea {
     --swatch-right-bg: #f7f7f7;
     --swatch-split-right: #ffffff;
     --extract-color: #5a5a5a;
+    --text-right: rgba(0, 0, 0, 0.75);
 }
 
 :root[data-theme="dark"] {
@@ -266,6 +268,7 @@ textarea {
     --swatch-right-bg: #0f0f0f;
     --swatch-split-right: #000000;
     --extract-color: #bdbdbd;
+    --text-right: rgba(255, 255, 255, 0.95);
 }
 
 .iris-theme-toggle {
@@ -371,8 +374,7 @@ textarea {
 .palette-label {
     position: relative;
     z-index: 1;
-    color: #e0e0e0;
-    text-shadow: 0 1px 0 rgba(41, 41, 41, 0.6), 1px 1px 0 rgba(41, 41, 41, 0.45);
+    color: #ffffff;
 }
 
 .iris-swatch-dim {
@@ -399,6 +401,7 @@ textarea {
         opacity: 0.35;
         transform: scale(0.92);
     }
+
     100% {
         opacity: 1;
         transform: scale(1);
@@ -410,6 +413,7 @@ textarea {
         opacity: 0.4;
         transform: translateX(16px) scale(0.97);
     }
+
     100% {
         opacity: 1;
         transform: translateX(0) scale(1);
@@ -421,6 +425,7 @@ textarea {
         opacity: 0.4;
         transform: translateX(-16px) scale(0.97);
     }
+
     100% {
         opacity: 1;
         transform: translateX(0) scale(1);
@@ -432,6 +437,7 @@ textarea {
         opacity: 0.2;
         transform: translateY(6px);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0);
@@ -442,6 +448,7 @@ textarea {
     0% {
         opacity: 0;
     }
+
     100% {
         opacity: 1;
     }
@@ -451,6 +458,7 @@ textarea {
     0% {
         opacity: 1;
     }
+
     100% {
         opacity: 0;
     }
@@ -460,9 +468,11 @@ textarea {
     0% {
         transform: translateY(calc(100% - 70px)) scaleY(0.94);
     }
+
     60% {
         transform: translateY(-3%) scaleY(1.01);
     }
+
     100% {
         transform: translateY(0) scaleY(1);
     }
@@ -472,6 +482,7 @@ textarea {
     0% {
         transform: translateY(0) scaleY(1);
     }
+
     100% {
         transform: translateY(calc(100% - 70px)) scaleY(0.94);
     }

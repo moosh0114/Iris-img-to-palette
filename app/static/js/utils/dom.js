@@ -1,31 +1,32 @@
+/**
+ * @fileoverview DOM Utilities
+ * This file contains reusable functions for selecting elements, handling UI notifications,
+ * and manipulating palette grid layouts and background styles.
+ */
+
 const MAX_FILES_PER_BATCH = 1000;
 
+// Device & Global Selectors
+
+// Detect if the current device supports touch
 function isTouchDevice() {
     return window.matchMedia("(hover: none)").matches || "ontouchstart" in window;
 }
 
+// Get the main image upload area element
 function getUploadAreaElement() {
     return document.getElementById("upload-area");
 }
 
+// Get the Alpine.js data instance mounted on the DOM
 function getUploaderData() {
     const uploaderRoot = document.querySelector("[x-data]");
     return uploaderRoot?._x_dataStack?.[0];
 }
 
-function applySwatchTextContrast(root = document) {
-    const swatches = root.querySelectorAll(".palette-swatch[data-hex]");
-    swatches.forEach((swatch) => {
-        const label = swatch.querySelector(".palette-label");
-        if (!label) return;
-        label.style.color = "#E0E0E0";
-        label.style.backgroundImage = "none";
-        label.style.webkitBackgroundClip = "initial";
-        label.style.backgroundClip = "initial";
-        label.style.textShadow = "0 1px 0 rgba(41, 41, 41, 0.6), 1px 1px 0 rgba(41, 41, 41, 0.45)";
-    });
-}
+// Notifications & Contrast
 
+// Show transient notice (Toast)
 function showTransientNotice(message) {
     const text = String(message || "").trim();
     if (!text) return;
@@ -47,10 +48,59 @@ function showTransientNotice(message) {
     }, 1200);
 }
 
+/**
+ * Calculate high-contrast text color (black or white) based on background color
+ * @param {string} hexcolor "#RRGGBB" or "RRGGBB" format
+ * @returns {string} "#000000" or "#FFFFFF"
+*/
+function getContrastYIQ(hexcolor) {
+    let hex = String(hexcolor).replace("#", "");
+    if (hex.length === 3) {
+        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    }
+    if (hex.length !== 6) return "#FFFFFF";
+
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+
+    // YIQ formula
+    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    return (yiq >= 128) ? "rgba(0, 0, 0, 0.75)" : "rgba(255, 255, 255, 0.95)";
+}
+
+/**
+ * Ensure text on swatches ( color codes ) is clearly visible against any background color ( automatically switches between black and white text )
+ * @param {Document | HTMLElement} root Root node to search, defaults to document
+*/
+function applySwatchTextContrast(root = document) {
+    const swatches = root.querySelectorAll(".palette-swatch[data-hex]");
+    swatches.forEach((swatch) => {
+        const hex = swatch.getAttribute("data-hex") || "";
+        const leftTextColor = getContrastYIQ(hex);
+
+        const label = swatch.querySelector(".palette-label");
+        if (!label) return;
+
+        label.style.backgroundImage = `linear-gradient(120deg, ${leftTextColor} 20%, var(--text-right) 80%)`;
+        label.style.webkitBackgroundClip = "text";
+        label.style.backgroundClip = "text";
+        label.style.webkitTextFillColor = "transparent";
+        label.style.color = "transparent";
+        label.style.textShadow = "none";
+    });
+}
+
+// Upload Area Background
+
 function getDefaultUploadGradient() {
     return "linear-gradient(120deg, var(--primary-color) 30%, var(--mid-band) 30% 70%, var(--primary-color) 70%)";
 }
 
+/**
+ * Update the upload area background with a fade-in fade-out transition
+ * @param {string} nextBackground New CSS background value
+*/
 function setUploadAreaBackground(nextBackground) {
     const uploadArea = getUploadAreaElement();
     if (!uploadArea) return;
@@ -85,6 +135,63 @@ function resetUploadAreaBackground() {
     setUploadAreaBackground(getDefaultUploadGradient());
 }
 
+/**
+ * Generate gradient background for upload area based on current palette
+ * @param {Document | HTMLElement} root
+*/
+function applyPaletteBackgroundToUploadArea(root = document) {
+    const uploadArea = getUploadAreaElement();
+    if (!uploadArea) return;
+
+    const uploaderData = getUploaderData();
+    const currentPalette = uploaderData?.extractedPalettes?.[uploaderData.currentIndex] || [];
+    const colors = currentPalette
+        .map((item) => String(item?.hex || "").trim())
+        .filter((hex) => /^#?[0-9a-fA-F]{6}$/.test(hex))
+        .map((hex) => (hex.startsWith("#") ? hex : `#${hex}`));
+
+    if (!colors.length) {
+        resetUploadAreaBackground();
+        return;
+    }
+
+    const n = colors.length;
+    const leftCount = Math.ceil(n / 2);
+    const rightCount = n - leftCount;
+    const leftColors = colors.slice(0, leftCount);
+    const rightColors = colors.slice(leftCount);
+    const midStart = 30;
+    const midEnd = 70;
+    const gradientStops = [];
+
+    if (leftCount > 0) {
+        leftColors.forEach((color, index) => {
+            const start = (midStart * index) / leftCount;
+            const end = (midStart * (index + 1)) / leftCount;
+            gradientStops.push(`${color} ${start}% ${end}%`);
+        });
+    }
+
+    gradientStops.push(`transparent ${midStart}% ${midEnd}%`);
+
+    if (rightCount > 0) {
+        rightColors.forEach((color, index) => {
+            const start = midEnd + ((100 - midEnd) * index) / rightCount;
+            const end = midEnd + ((100 - midEnd) * (index + 1)) / rightCount;
+            gradientStops.push(`${color} ${start}% ${end}%`);
+        });
+    }
+
+    setUploadAreaBackground(`linear-gradient(120deg, ${gradientStops.join(", ")})`);
+}
+
+// Palette Grid Rendering
+
+/**
+ * Read palette JSON data stored in DOM (usually injected by HTMX after update)
+ * @param {Document | HTMLElement} root 
+ * @returns {Array | null}
+*/
 function readPaletteDataFromDom(root = document) {
     const node = root.querySelector("#palettes-data");
     if (!node) return null;
@@ -96,6 +203,24 @@ function readPaletteDataFromDom(root = document) {
     }
 }
 
+/**
+ * Adjust swatch container Grid Layout to switch between different column counts based on the number of colors
+ * @param {HTMLElement} container 
+ * @param {number} count 
+*/
+function updateSwatchGridLayout(container, count) {
+    if (!container) return;
+    container.classList.remove("grid-cols-5", "grid-cols-6");
+    container.classList.add(count >= 11 ? "grid-cols-6" : "grid-cols-5");
+}
+
+/**
+ * Render actual swatch DOM structure
+ * @param {HTMLElement} container Swatch container
+ * @param {Array} palette Current color data array
+ * @param {number} targetCount Target generation count
+ * @param {Object} options Other options settings
+*/
 function renderPaletteGrid(container, palette, targetCount = 10, options = {}) {
     if (!container) return;
     const commit = Boolean(options.commit);
@@ -165,56 +290,4 @@ function renderPaletteGrid(container, palette, targetCount = 10, options = {}) {
     }
 
     applySwatchTextContrast(container);
-}
-
-function updateSwatchGridLayout(container, count) {
-    if (!container) return;
-    container.classList.remove("grid-cols-5", "grid-cols-6");
-    container.classList.add(count >= 11 ? "grid-cols-6" : "grid-cols-5");
-}
-
-function applyPaletteBackgroundToUploadArea(root = document) {
-    const uploadArea = getUploadAreaElement();
-    if (!uploadArea) return;
-
-    const uploaderData = getUploaderData();
-    const currentPalette = uploaderData?.extractedPalettes?.[uploaderData.currentIndex] || [];
-    const colors = currentPalette
-        .map((item) => String(item?.hex || "").trim())
-        .filter((hex) => /^#?[0-9a-fA-F]{6}$/.test(hex))
-        .map((hex) => (hex.startsWith("#") ? hex : `#${hex}`));
-
-    if (!colors.length) {
-        resetUploadAreaBackground();
-        return;
-    }
-
-    const n = colors.length;
-    const leftCount = Math.ceil(n / 2);
-    const rightCount = n - leftCount;
-    const leftColors = colors.slice(0, leftCount);
-    const rightColors = colors.slice(leftCount);
-    const midStart = 30;
-    const midEnd = 70;
-    const gradientStops = [];
-
-    if (leftCount > 0) {
-        leftColors.forEach((color, index) => {
-            const start = (midStart * index) / leftCount;
-            const end = (midStart * (index + 1)) / leftCount;
-            gradientStops.push(`${color} ${start}% ${end}%`);
-        });
-    }
-
-    gradientStops.push(`transparent ${midStart}% ${midEnd}%`);
-
-    if (rightCount > 0) {
-        rightColors.forEach((color, index) => {
-            const start = midEnd + ((100 - midEnd) * index) / rightCount;
-            const end = midEnd + ((100 - midEnd) * (index + 1)) / rightCount;
-            gradientStops.push(`${color} ${start}% ${end}%`);
-        });
-    }
-
-    setUploadAreaBackground(`linear-gradient(120deg, ${gradientStops.join(", ")})`);
 }
