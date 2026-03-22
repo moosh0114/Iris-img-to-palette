@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Palette Extraction UI</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ececec;
+            font-family: sans-serif;
+        }
+
+        .upload-area {
+            border: 2px dashed #4b4b4b;
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            background: #252525;
+        }
+
+        .upload-area:hover,
+        .upload-area.dragover {
+            border-color: #4ade80;
+            background: #2a352c;
+        }
+
+        .loading-spinner {
+            display: none;
+        }
+
+        .htmx-request .loading-spinner {
+            display: inline-block;
+        }
+
+        .htmx-request .normal-content {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="p-6">
+    <div class="max-w-4xl mx-auto flex flex-col items-center">
+        <h1 class="text-3xl font-bold mb-8">Core Colors Extraction</h1>
+
+        <form id="extract-form" class="w-full max-w-md" hx-post="/api/extract" hx-target="#result" hx-swap="innerHTML"
+            enctype="multipart/form-data">
+
+            <div class="mb-4">
+                <label for="method" class="block text-sm text-gray-300 mb-2">Method</label>
+                <select id="method" name="method"
+                    class="w-full rounded-xl border border-[#3b3b3b] bg-[#252525] px-3 py-2 text-gray-200">
+                    <option value="gwo" selected>GWO</option>
+                    <option value="saliency">Saliency</option>
+                </select>
+            </div>
+
+            <label id="upload-label" class="upload-area block w-full mb-6"
+                ondragover="this.classList.add('dragover'); event.preventDefault();"
+                ondragleave="this.classList.remove('dragover'); event.preventDefault();"
+                ondrop="this.classList.remove('dragover'); event.preventDefault(); document.getElementById('image-upload').files = event.dataTransfer.files; document.getElementById('filename-display').innerText = event.dataTransfer.files[0].name;">
+                <div class="normal-content">
+                    <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" stroke="currentColor" fill="none"
+                        viewBox="0 0 48 48" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" />
+                    </svg>
+                    <span id="filename-display" class="block text-sm text-gray-300">Click to upload or drag and
+                        drop</span>
+                </div>
+                <div class="loading-spinner text-green-400">
+                    <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-green-400 inline-block"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                    <span id="loading-text" class="font-medium mt-2 block">Extracting... Please wait</span>
+                </div>
+
+                <input id="image-upload" class="hidden" name="image" type="file" accept="image/*"
+                    onchange="document.getElementById('filename-display').innerText = this.files[0].name;" />
+            </label>
+
+            <button type="submit"
+                class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-4 rounded-xl transition-colors disabled:opacity-50">
+                Extract 10 Colors
+            </button>
+        </form>
+
+        <div id="result" class="w-full mt-10">
+        </div>
+    </div>
+
+    <script>
+        document.body.addEventListener('htmx:beforeRequest', function () {
+            document.querySelector('button[type="submit"]').disabled = true;
+            const method = document.getElementById('method').value.toUpperCase();
+            document.getElementById('loading-text').innerText = 'Extracting with ' + method + '... Please wait';
+        });
+        document.body.addEventListener('htmx:afterRequest', function () {
+            document.querySelector('button[type="submit"]').disabled = false;
+        });
+    </script>
+</body>
+
+</html>
