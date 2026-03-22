@@ -62,6 +62,14 @@ Keyboard : `ArrowUp/ArrowDown` adjust `n_colors`, `Enter` submit, `ArrowLeft/Arr
 uv run python -m scripts.extract_colors
 ```
 
+## How To Train
+
+### Training via GUI
+
+```shell
+python -m uv run uvicorn extractor_app.main:app --reload
+```
+
 ## Project Dependencies Details
 
 FastAPI License : [https://github.com/fastapi/fastapi/blob/master/LICENSE](https://github.com/fastapi/fastapi/blob/master/LICENSE)
