@@ -2,236 +2,204 @@
 <html lang="en" data-theme="dark">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Palette Extraction UI</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <style>
-        body {
-            background-color: #1a1a1a;
-            color: #ececec;
-            font-family: sans-serif;
-        }
-
-        .upload-area {
-            border: 2px dashed #4b4b4b;
-            border-radius: 12px;
-            padding: 3rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            background: #252525;
-        }
-
-        .upload-area:hover,
-        .upload-area.dragover {
-            border-color: #4ade80;
-            background: #2a352c;
-        }
-
-        .loading-spinner {
-            display: none;
-        }
-
-        .htmx-request .loading-spinner {
-            display: inline-block;
-        }
-
-        .htmx-request .normal-content {
-            display: none;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Palette Extraction UI</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    body { background:#1a1a1a; color:#ececec; }
+    .upload-area {
+      border:2px dashed #4b4b4b;
+      border-radius:12px;
+      padding:3rem;
+      text-align:center;
+      cursor:pointer;
+      background:#252525;
+    }
+    .upload-area.dragover {
+      border-color:#4ade80;
+      background:#2a352c;
+    }
+  </style>
 </head>
 
 <body class="p-6">
-    <div class="max-w-4xl mx-auto flex flex-col items-center">
-        <h1 class="text-3xl font-bold mb-8">Core Colors Extraction</h1>
 
-        <form id="extract-form" class="w-full max-w-md" hx-post="/api/extract" hx-target="#result" hx-swap="innerHTML"
-            enctype="multipart/form-data">
+  <div class="max-w-4xl mx-auto flex flex-col items-center"
+    x-data="paletteApp()"
+    @pick-color.window="addColor($event.detail)"
+  >
+    <h1 class="text-3xl font-bold mb-8">Core Colors Extraction</h1>
 
-            <div class="mb-4">
-                <label for="method" class="block text-sm text-gray-300 mb-2">Method</label>
-                <select id="method" name="method"
-                    class="w-full rounded-xl border border-[#3b3b3b] bg-[#252525] px-3 py-2 text-gray-200">
-                    <option value="gwo" selected>GWO</option>
-                    <option value="saliency">Saliency</option>
-                    <option value="k-means">K-Means</option>
-                </select>
-            </div>
+    <!-- FORM -->
+    <form 
+      class="w-full max-w-md"
+      hx-post="/api/extract"
+      hx-target="#result"
+      hx-swap="innerHTML"
+      enctype="multipart/form-data"
 
-            <label id="upload-label" class="upload-area block w-full mb-6"
-                ondragover="this.classList.add('dragover'); event.preventDefault();"
-                ondragleave="this.classList.remove('dragover'); event.preventDefault();"
-                ondrop="handleDrop(event)">
-                <div class="normal-content" id="normal-content-div">
-                    <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" stroke="currentColor" fill="none"
-                        viewBox="0 0 48 48" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" />
-                    </svg>
-                    <span id="filename-display" class="block text-sm text-gray-300 mb-3">Click to upload or drag and
-                        drop</span>
-                    <img id="image-preview" class="hidden max-h-48 mx-auto rounded-lg shadow-md" />
-                </div>
-                <div class="loading-spinner text-green-400">
-                    <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-green-400 inline-block"
-                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                        </circle>
-                        <path class="opacity-75" fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                        </path>
-                    </svg>
-                    <span id="loading-text" class="font-medium mt-2 block">Extracting... Please wait</span>
-                </div>
+      hx-on::before-request="
+        loading = true;
+        $refs.submitBtn.disabled = true;
+      "
 
-                <input id="image-upload" class="hidden" name="image" type="file" accept="image/*"
-                    onchange="handleFileSelect(this.files)" />
-            </label>
+      hx-on::after-request="
+        loading = false;
+        $refs.submitBtn.disabled = false;
+      "
+    >
+      <!-- METHOD -->
+      <select name="method"
+        class="w-full mb-4 rounded-xl bg-[#252525] px-3 py-2">
+        <option value="gwo">GWO</option>
+        <option value="saliency">Saliency</option>
+        <option value="k-means">K-Means</option>
+      </select>
 
-            <button type="submit"
-                class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-4 rounded-xl transition-colors disabled:opacity-50">
-                Extract 10 Colors
-            </button>
-        </form>
+      <!-- UPLOAD -->
+      <label class="upload-area block mb-6"
+        @dragover.prevent="dragover=true"
+        @dragleave="dragover=false"
+        @drop.prevent="handleDrop($event)"
+        :class="{ 'dragover': dragover }"
+      >
+        <span x-text="fileName || 'Click or drop image'"></span>
 
-        <div class="w-full mt-8 bg-[#252525] rounded-2xl p-6 shadow-lg border border-[#3b3b3b]">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-semibold">Selected Colors (<span id="selected-count">0</span>/10)</h2>
-                <button id="record-btn" disabled onclick="recordData()" class="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-lg transition-colors">
-                    Record Data
-                </button>
-            </div>
-            <div class="flex flex-wrap gap-4 justify-start" id="color-slots">
-                <!-- Slots generated by JS -->
-            </div>
-            <div id="record-status" class="mt-4 text-sm hidden"></div>
-        </div>
+        <img x-show="preview" :src="preview" class="mt-3 max-h-48 mx-auto rounded" />
 
-        <div id="result" class="w-full mt-6">
-        </div>
+        <input type="file" name="image" class="hidden" @change="handleFile($event)">
+      </label>
+
+      <button type="submit"
+        x-ref="submitBtn"
+        class="w-full bg-green-600 py-3 rounded-xl">
+        <span x-show="!loading">Extract Colors</span>
+        <span x-show="loading">Extracting...</span>
+      </button>
+    </form>
+
+    <!-- SELECTED COLORS -->
+    <div class="w-full mt-8 bg-[#252525] p-6 rounded-2xl">
+      <div class="flex justify-between mb-4">
+        <h2>
+          Selected (<span x-text="selectedColors.length"></span>/10)
+        </h2>
+
+        <button 
+          @click="recordData"
+          :disabled="selectedColors.length !== maxColors"
+          class="bg-blue-600 px-4 py-2 rounded disabled:opacity-50"
+        >
+          Record
+        </button>
+      </div>
+
+      <div class="flex flex-wrap gap-4">
+        <!-- SELECTED -->
+        <template x-for="(c,i) in selectedColors" :key="i">
+          <div
+            class="w-16 h-16 rounded-full cursor-pointer"
+            :style="'background:'+c"
+            @click="removeColor(i)"
+          >
+          </div>
+        </template>
+
+        <!-- EMPTY -->
+        <template x-for="i in (maxColors - selectedColors.length)">
+          <div class="w-16 h-16 rounded-full border-2 border-dashed border-gray-600"></div>
+        </template>
+      </div>
     </div>
 
-    <script>
-        document.body.addEventListener('htmx:beforeRequest', function () {
-            document.querySelector('button[type="submit"]').disabled = true;
-            const method = document.getElementById('method').value.toUpperCase();
-            document.getElementById('loading-text').innerText = 'Extracting with ' + method + '... Please wait';
-        });
-        document.body.addEventListener('htmx:afterRequest', function () {
-            document.querySelector('button[type="submit"]').disabled = false;
-        });
+    <!-- RESULT ( HTMX injection ) -->
+    <div id="result"
+      class="w-full mt-6"
 
-        // Image Preview Logic
-        function handleDrop(event) {
-            event.currentTarget.classList.remove('dragover');
-            event.preventDefault();
-            const files = event.dataTransfer.files;
-            document.getElementById('image-upload').files = files;
-            handleFileSelect(files);
-        }
+      hx-on::after-swap="
+        // Fetch color from elements returned by the server
+        const colors = [...this.querySelectorAll('[data-color]')]
+            .map(el => el.dataset.color);
 
-        function handleFileSelect(files) {
-            if (files && files.length > 0) {
-                const file = files[0];
-                document.getElementById('filename-display').innerText = file.name;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.getElementById('image-preview');
-                    img.src = e.target.result;
-                    img.classList.remove('hidden');
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        // Color Selection Logic
-        let selectedColors = [];
-        const MAX_COLORS = 10;
-
-        function renderSlots() {
-            const container = document.getElementById('color-slots');
-            container.innerHTML = '';
-            document.getElementById('selected-count').innerText = selectedColors.length;
-            
-            for (let i = 0; i < MAX_COLORS; i++) {
-                const slot = document.createElement('div');
-                slot.className = 'w-16 h-16 rounded-full shadow-md border-2 ' + 
-                    (i < selectedColors.length ? 'border-transparent cursor-pointer' : 'border-dashed border-[#4b4b4b] bg-transparent');
-                
-                if (i < selectedColors.length) {
-                    slot.style.backgroundColor = selectedColors[i];
-                    slot.title = "Click to remove " + selectedColors[i];
-                    slot.onclick = () => removeSelectedColor(i);
-                }
-                container.appendChild(slot);
-            }
-
-            document.getElementById('record-btn').disabled = selectedColors.length !== MAX_COLORS;
-        }
-
-        window.addSelectedColor = function(hex) {
-            if (selectedColors.length < MAX_COLORS) {
-                selectedColors.push(hex);
-                renderSlots();
-            } else {
-                alert('You have already selected 10 colors.');
-            }
-        };
-
-        window.removeSelectedColor = function(index) {
-            selectedColors.splice(index, 1);
-            renderSlots();
-        };
-
-        renderSlots();
-
-        async function recordData() {
-            const fileInput = document.getElementById('image-upload');
-            if (!fileInput.files || fileInput.files.length === 0) {
-                alert('Please upload an image first.');
-                return;
-            }
-
-            const btn = document.getElementById('record-btn');
-            const status = document.getElementById('record-status');
-            btn.disabled = true;
-            btn.innerText = 'Recording...';
-            status.classList.remove('hidden');
-            status.className = 'mt-4 text-sm font-medium text-blue-400';
-            status.innerText = 'Running algorithms and saving data... Please wait.';
-
-            const formData = new FormData();
-            formData.append('image', fileInput.files[0]);
-            formData.append('selected_colors', JSON.stringify(selectedColors));
-
-            try {
-                const response = await fetch('/api/record', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (response.ok) {
-                    const result = await response.json();
-                    status.className = 'mt-4 text-sm font-medium text-green-400';
-                    status.innerText = 'Successfully recorded 40 colors to training_data.json!';
-                } else {
-                    const errText = await response.text();
-                    status.className = 'mt-4 text-sm font-medium text-red-400';
-                    status.innerText = 'Failed: ' + errText;
-                }
-            } catch(e) {
-                status.className = 'mt-4 text-sm font-medium text-red-400';
-                status.innerText = 'Error: ' + e.message;
-            } finally {
-                btn.disabled = false;
-                btn.innerText = 'Record Data';
-            }
-        }
-    </script>
+        $data.setExtracted(colors);
+      "
+    ></div>
+  </div>
+  
+  <script>
+  function paletteApp() {
+      return {
+          file: null,
+          fileName: '',
+          preview: null,
+          dragover: false,
+          loading: false,
+  
+          selectedColors: [],
+          extractedColors: [],
+          maxColors: 10,
+  
+          handleFile(e) {
+              const file = e.target.files[0];
+              if (!file) return;
+  
+              this.file = file;
+              this.fileName = file.name;
+  
+              const r = new FileReader();
+              r.onload = e => this.preview = e.target.result;
+              r.readAsDataURL(file);
+          },
+  
+          handleDrop(e) {
+              const file = e.dataTransfer.files[0];
+              if (!file) return;
+  
+              this.file = file;
+              this.fileName = file.name;
+  
+              const r = new FileReader();
+              r.onload = e => this.preview = e.target.result;
+              r.readAsDataURL(file);
+          },
+  
+          setExtracted(colors) {
+              this.extractedColors = colors;
+          },
+  
+          addColor(c) {
+              if (this.selectedColors.length < this.maxColors) {
+                  this.selectedColors.push(c);
+              }
+          },
+  
+          removeColor(i) {
+              this.selectedColors.splice(i,1);
+          },
+  
+          async recordData() {
+              if (!this.file) {
+                  alert('upload first');
+                  return;
+              }
+  
+              const fd = new FormData();
+              fd.append('image', this.file);
+              fd.append('selected_colors', JSON.stringify(this.selectedColors));
+  
+              await fetch('/api/record', {
+                  method:'POST',
+                  body:fd
+              });
+  
+              alert('saved');
+          }
+      }
+  }
+  </script>
 </body>
 
 </html>
