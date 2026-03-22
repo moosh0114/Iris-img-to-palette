@@ -15,11 +15,11 @@ from fastapi.concurrency import run_in_threadpool
 
 import sys
 
-# Add project root to sys path so we can import aicore.
+# Add project root to sys path so we can import core modules.
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from aicore.gwo_extraction import extract_top10_oklab
-from aicore.saliency_extraction import extract_top10_saliency
+from core.ai.gwo_extraction import extract_top10_oklab
+from core.ai.saliency_extraction import extract_top10_saliency
 
 
 app = FastAPI(title="Palette Extraction App")

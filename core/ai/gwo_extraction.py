@@ -1,5 +1,3 @@
-import sys
-from pathlib import Path
 import numpy as np
 import cv2
 from sklearn.cluster import KMeans
@@ -22,8 +20,6 @@ class KMeansSeededGWO(GreyWolfOptimizer):
             individual.f = task.eval(individual.x)
         return pop, fpop, d
 
-# Add parent directory to sys.path to allow importing shared modules.
-sys.path.append(str(Path(__file__).resolve().parent.parent))
 from core.colors.color_oklch import _linear_rgb_to_oklab, _srgb_channel_to_linear
 from core.colors.color_oklab import oklab_to_hex
 

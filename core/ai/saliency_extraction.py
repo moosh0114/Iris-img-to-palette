@@ -1,14 +1,11 @@
 from __future__ import annotations
 
 from pathlib import Path
-import sys
 
 import cv2
 import numpy as np
 from sklearn.cluster import KMeans
 
-# Reuse shared color conversion helpers for consistent output shaping.
-sys.path.append(str(Path(__file__).resolve().parent.parent))
 from core.colors.color_oklab import oklab_to_hex
 from core.colors.color_oklch import _linear_rgb_to_oklab, _srgb_channel_to_linear
 
