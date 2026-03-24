@@ -1,3 +1,11 @@
+# This extractor converts sampled image pixels into OKLab, initializes 10 centers
+# with k-means++, then refines them using Grey Wolf Optimizer (GWO).
+# The objective combines:
+# 1) Reconstruction error (MSE): centers should represent the image distribution.
+# 2) Diversity penalty: discourages very similar centers for a more distinct palette.
+# It returns 10 RGB colors. The final order is sorted by OKLab lightness (L) in
+# descending order, not by pixel-frequency dominance.
+
 import numpy as np
 import cv2
 from sklearn.cluster import KMeans

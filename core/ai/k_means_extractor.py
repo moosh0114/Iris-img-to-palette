@@ -1,3 +1,8 @@
+# This method samples pixels from the image and runs k-means in RGB space with
+# k=10. Each cluster center is treated as one dominant color.
+# The 10 centers are sorted by cluster size (pixel support) in descending order,
+# so earlier colors represent more frequent colors in the sampled pixels.
+
 from __future__ import annotations
 
 from pathlib import Path

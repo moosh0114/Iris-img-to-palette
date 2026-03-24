@@ -1,3 +1,9 @@
+# This extractor computes per-pixel saliency weights, converts sampled pixels to
+# OKLab, and runs weighted k-means with k=10.
+# Pixels with higher visual saliency contribute more to the cluster centers.
+# It returns 10 colors sorted by weighted cluster support, meaning colors from
+# visually salient regions are prioritized rather than pure global pixel frequency.
+
 from __future__ import annotations
 
 from pathlib import Path
