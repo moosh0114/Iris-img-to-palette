@@ -6,6 +6,9 @@ from fastapi import FastAPI, File, Form, Request, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 from .config import settings
 from .services.format_service import format_result_for_template
@@ -21,6 +24,7 @@ from .storage import init_db
 
 templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent / "templates"))
 MAX_BATCH_UPLOADS = 20
+limiter = Limiter(key_func=get_remote_address)
 
 
 @asynccontextmanager
@@ -31,6 +35,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Iris Img to Palette", lifespan=lifespan)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.mount("/uploads", StaticFiles(directory=str(settings.upload_dir), check_dir=False), name="uploads")
 app.mount("/static", StaticFiles(directory=str(Path(__file__).resolve().parent / "static")), name="static")
 
@@ -92,6 +98,7 @@ async def api_result(request: Request, result_id: int) -> HTMLResponse:
 
 
 @app.post("/api/extract", response_class=HTMLResponse)
+@limiter.limit("5/minute")
 async def api_extract(
     request: Request,
     images: list[UploadFile] = File(...),
