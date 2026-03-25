@@ -19,9 +19,10 @@ def extract_top10_kmeans(
     max_samples: int = 40000,
     random_state: int = 42,
 ) -> np.ndarray:
-    img_bgr = cv2.imread(str(image_path))
+    img_bytes = np.fromfile(image_path, dtype=np.uint8)
+    img_bgr = cv2.imdecode(img_bytes, cv2.IMREAD_COLOR)
     if img_bgr is None:
-        raise ValueError(f"Unable to read image: {image_path}")
+        raise ValueError("Failed to decode image from path.")
 
     img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
     pixels_rgb = img_rgb.reshape(-1, 3).astype(np.float64)

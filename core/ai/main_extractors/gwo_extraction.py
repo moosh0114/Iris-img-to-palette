@@ -85,7 +85,10 @@ class OklabColorQuant(Problem):
         return mse + lam * diversity_penalty
 
 def extract_top10_gwo(image_path, k=10, sample_ratio=0.3, pop_size=60, max_evals=20000):
-    img = cv2.imread(image_path)
+    img_bytes = np.fromfile(image_path, dtype=np.uint8)
+    img = cv2.imdecode(img_bytes, cv2.IMREAD_COLOR)
+    if img is None:
+        raise ValueError("Failed to decode image from path.")
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) / 255.0
 
     # Flatten and sample pixels: increase sampling ratio to 30%,
