@@ -9,7 +9,9 @@ document.addEventListener("DOMContentLoaded", () => applySwatchTextContrast());
 document.addEventListener("DOMContentLoaded", () => {
     applyTheme(getStoredTheme());
     const alpineData = getUploaderData();
-    if (alpineData) alpineData.schedulePaletteRender();
+    if (alpineData && typeof alpineData.schedulePaletteRender === "function") {
+        alpineData.schedulePaletteRender();
+    }
     initExportDockHover(document);
 });
 
@@ -36,7 +38,9 @@ function applyExtractResponse(target) {
 
         alpineData.extractedPalettes = palettes;
         requestAnimationFrame(() => {
-            alpineData.renderCurrentPalette(true, { keepDesktop, keepMobile });
+            if (typeof alpineData.renderCurrentPalette === "function") {
+                alpineData.renderCurrentPalette(true, { keepDesktop, keepMobile });
+            }
             alpineData.preSubmitDesktopCount = 0;
             alpineData.preSubmitMobileCount = 0;
         });
@@ -81,6 +85,7 @@ async function submitExtractBatch(form) {
     selectedFiles.forEach((file) => formData.append("images", file));
     formData.append("n_colors", String(alpineData.nColors || "10"));
     formData.append("current_index", String(alpineData.currentIndex || 0));
+    formData.append("method", String(alpineData.extractMethod || "kmeans"));
 
     const result = document.getElementById("result");
 

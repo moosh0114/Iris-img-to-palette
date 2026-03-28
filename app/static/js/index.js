@@ -19,3 +19,9 @@ function uploader() {
         ...uploaderKeyboard()
     };
 }
+
+// Expose uploader factory globally for x-data="uploader()" and register Alpine component name.
+window.uploader = uploader;
+document.addEventListener("alpine:init", () => {
+    window.Alpine?.data?.("uploader", uploader);
+});

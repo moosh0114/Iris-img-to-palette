@@ -18,6 +18,7 @@ from .services.palette_service import (
     extract_batch_palettes,
     load_history,
     load_result,
+    normalize_method,
 )
 from .storage import init_db
 
@@ -104,6 +105,7 @@ async def api_extract(
     images: list[UploadFile] = File(...),
     n_colors: int = Form(10),
     current_index: int = Form(0),
+    method: str = Form("kmeans"),
 ) -> HTMLResponse:
     if len(images) > MAX_BATCH_UPLOADS:
         return HTMLResponse(
@@ -117,6 +119,7 @@ async def api_extract(
             clamp_n_colors(int(n_colors)),
             db_path=settings.db_path,
             upload_dir=settings.upload_dir,
+            method=normalize_method(method),
         )
         palettes = result.get("palettes") or []
         if palettes:

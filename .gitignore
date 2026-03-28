@@ -3,6 +3,7 @@ training_data.json
 
 # AI Models
 /models/*
+!/models/Iris1.0.pth
 
 # Python
 __pycache__/

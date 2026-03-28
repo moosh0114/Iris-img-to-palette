@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     max_batch_images: int = 1000
     upload_chunk_size: int = 1024 * 1024
     history_limit: int = 20
+    model_similarity_threshold: float = 0.02
 
     @property
     def data_dir(self) -> Path:
@@ -21,6 +22,10 @@ class Settings(BaseSettings):
     @property
     def db_path(self) -> Path:
         return self.data_dir / "app.db"
+
+    @property
+    def model_path(self) -> Path:
+        return self.repo_root / "models" / "palette_scorer.pth"
 
 
 settings = Settings()

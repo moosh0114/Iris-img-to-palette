@@ -6,6 +6,7 @@ from fastapi.concurrency import run_in_threadpool
 
 from ..config import settings
 from ..core.extract_colors import extract_dominant_colors
+from ..core.model_extract_colors import extract_dominant_colors_with_model
 from ..storage import PaletteResult, clear_results, get_result, list_image_paths, list_results, save_result
 from .file_service import (
     finalize_upload,
@@ -20,6 +21,11 @@ from .format_service import palettes_response_payload
 
 def clamp_n_colors(value: int) -> int:
     return max(1, min(12, int(value)))
+
+
+def normalize_method(method: str | None) -> str:
+    value = (method or "kmeans").strip().lower()
+    return "model" if value in {"model", "ai"} else "kmeans"
 
 
 async def load_history(db_path: Path, *, limit: int = settings.history_limit) -> list[PaletteResult]:
@@ -46,6 +52,7 @@ async def extract_batch_palettes(
     *,
     db_path: Path,
     upload_dir: Path,
+    method: str = "kmeans",
 ) -> dict[str, Any]:
     if not uploads:
         raise ValueError("Please upload at least one image.")
@@ -53,6 +60,7 @@ async def extract_batch_palettes(
         raise ValueError(f"You can upload up to {settings.max_batch_images} images at once.")
 
     n = clamp_n_colors(n_colors)
+    selected_method = normalize_method(method)
     palettes_raw: list[list[dict[str, Any]]] = []
 
     for upload in uploads:
@@ -70,7 +78,19 @@ async def extract_batch_palettes(
             final_path = finalize_upload(temp_path, upload_dir, file_hash, safe_name)
             temp_path = None
 
-            palette = await run_in_threadpool(extract_dominant_colors, str(final_path), n)
+            try:
+                if selected_method == "model":
+                    palette = await run_in_threadpool(
+                        extract_dominant_colors_with_model,
+                        str(final_path),
+                        n,
+                        model_path=settings.model_path,
+                        similarity_threshold=settings.model_similarity_threshold,
+                    )
+                else:
+                    palette = await run_in_threadpool(extract_dominant_colors, str(final_path), n)
+            except FileNotFoundError as exc:
+                raise ValueError(str(exc)) from exc
             palettes_raw.append(palette)
             await save_result(
                 db_path=db_path,
