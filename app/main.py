@@ -105,7 +105,7 @@ async def api_extract(
     images: list[UploadFile] = File(...),
     n_colors: int = Form(10),
     current_index: int = Form(0),
-    method: str = Form("kmeans"),
+    method: str = Form("model"),
 ) -> HTMLResponse:
     if len(images) > MAX_BATCH_UPLOADS:
         return HTMLResponse(

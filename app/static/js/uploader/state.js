@@ -38,7 +38,7 @@ function uploaderState() {
         // Target number of colors to extract, used as a string bound to the input box
         nColors: "10",
         // Extraction mode : "kmeans" or "model"
-        extractMethod: "kmeans",
+        extractMethod: "model",
         // Stores the extracted palette data for each image
         extractedPalettes: [],
         paletteRenderTimer: null,

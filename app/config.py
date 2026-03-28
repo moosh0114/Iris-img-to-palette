@@ -25,7 +25,10 @@ class Settings(BaseSettings):
 
     @property
     def model_path(self) -> Path:
-        return self.repo_root / "models" / "palette_scorer.pth"
+        primary_path = self.repo_root / "models" / "palette_scorer.pth"
+        if primary_path.exists():
+            return primary_path
+        return self.repo_root / "models" / "Iris1.0.pth"
 
 
 settings = Settings()

@@ -85,7 +85,7 @@ async function submitExtractBatch(form) {
     selectedFiles.forEach((file) => formData.append("images", file));
     formData.append("n_colors", String(alpineData.nColors || "10"));
     formData.append("current_index", String(alpineData.currentIndex || 0));
-    formData.append("method", String(alpineData.extractMethod || "kmeans"));
+    formData.append("method", String(alpineData.extractMethod || "model"));
 
     const result = document.getElementById("result");
 
